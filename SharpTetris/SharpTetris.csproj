@@ -1,0 +1,204 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DF1AE0AC-21B7-414C-B275-C97B934D5E79}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Net.SamuelChen.Tetris</RootNamespace>
+    <AssemblyName>#Tetris</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.DirectX.DirectInput, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controls\ControllerSetting.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ControllerSetting.Designer.cs">
+      <DependentUpon>ControllerSetting.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\WizPageGameType.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\WizPageGameType.Designer.cs">
+      <DependentUpon>WizPageGameType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Enums.cs" />
+    <Compile Include="Controls\IWizard.cs" />
+    <Compile Include="Controls\IWizardPage.cs" />
+    <Compile Include="NewGameForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NewGameForm.Designer.cs">
+      <DependentUpon>NewGameForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\NewGameWizard.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\NewGameWizard.Designer.cs">
+      <DependentUpon>NewGameWizard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OptionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="OptionForm.Designer.cs">
+      <DependentUpon>OptionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Controls\ControllerSetting.resx">
+      <DependentUpon>ControllerSetting.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\NewGameWizard.resx">
+      <DependentUpon>NewGameWizard.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\WizPageGameType.resx">
+      <DependentUpon>WizPageGameType.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\WizPageMultiPlayer.resx">
+      <DependentUpon>WizPageMultiPlayer.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\WizPageSummary.resx">
+      <DependentUpon>WizPageSummary.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NewGameForm.resx">
+      <DependentUpon>NewGameForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OptionForm.resx">
+      <DependentUpon>OptionForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="Controls\WizPageMultiPlayer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\WizPageMultiPlayer.Designer.cs">
+      <DependentUpon>WizPageMultiPlayer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\WizPageSummary.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\WizPageSummary.Designer.cs">
+      <DependentUpon>WizPageSummary.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Net.SamuelChen.Tetris.Block\Net.SamuelChen.Tetris.Block.csproj">
+      <Project>{75A8DD9F-ABD3-4CB1-B65C-558D70FC1B66}</Project>
+      <Name>Net.SamuelChen.Tetris.Block</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Net.SamuelChen.Tetris.Controller\Net.SamuelChen.Tetris.Controller.csproj">
+      <Project>{0E9455B1-9F88-4DA9-A847-05BA68D8FC56}</Project>
+      <Name>Net.SamuelChen.Tetris.Controller</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Net.SamuelChen.Tetris.Game\Net.SamuelChen.Tetris.Game.csproj">
+      <Project>{2A99D936-8564-4E10-907E-BDE72F9F9CB8}</Project>
+      <Name>Net.SamuelChen.Tetris.Game</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Net.SamuelChen.Tetris.Service\Net.SamuelChen.Tetris.Service.csproj">
+      <Project>{3BBFC5E7-E5FB-4998-A429-CC32EDBAEC94}</Project>
+      <Name>Net.SamuelChen.Tetris.Service</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Net.SamuelChen.Tetris.Skin\Net.SamuelChen.Tetris.Skin.csproj">
+      <Project>{F67DCD28-4E0C-4766-817C-D57ED81D4218}</Project>
+      <Name>Net.SamuelChen.Tetris.Skin</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="setting.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="skin\default\blockBlank.bmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="skin\default\blockBomb.bmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="skin\default\blockNormal.bmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="skin\default\blocks.bmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="skin\default\blockWall.bmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="skin\default\blockRoadblock.bmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="skin\default\skin.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

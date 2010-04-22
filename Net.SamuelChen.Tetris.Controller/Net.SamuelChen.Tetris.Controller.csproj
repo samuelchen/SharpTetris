@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0E9455B1-9F88-4DA9-A847-05BA68D8FC56}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Net.SamuelChen.Tetris.Controller</RootNamespace>
+    <AssemblyName>Net.SamuelChen.Tetris.Controller</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.DirectX, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="Microsoft.DirectX.DirectInput, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controller.cs" />
+    <Compile Include="ControllerEvent.cs" />
+    <Compile Include="ControllerException.cs" />
+    <Compile Include="ControllerFactory.cs" />
+    <Compile Include="ControllerKey.cs" />
+    <Compile Include="Control\ControllerSettingInputDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Control\ControllerSettingInputDialog.Designer.cs">
+      <DependentUpon>ControllerSettingInputDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DXControllerFactory.cs" />
+    <Compile Include="Control\ControllerSettingPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Control\ControllerSettingPanel.Designer.cs">
+      <DependentUpon>ControllerSettingPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DXController.cs" />
+    <Compile Include="DXJoystickController.cs" />
+    <Compile Include="DXKeyboardController.cs" />
+    <Compile Include="Enums.cs" />
+    <Compile Include="IController.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Net.SamuelChen.Tetris.Service\Net.SamuelChen.Tetris.Service.csproj">
+      <Project>{3BBFC5E7-E5FB-4998-A429-CC32EDBAEC94}</Project>
+      <Name>Net.SamuelChen.Tetris.Service</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Control\ControllerSettingInputDialog.resx">
+      <DependentUpon>ControllerSettingInputDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Control\ControllerSettingPanel.resx">
+      <DependentUpon>ControllerSettingPanel.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

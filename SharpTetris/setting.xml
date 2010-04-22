@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<setting>
+  <skin>default</skin>
+  <log>log.txt</log>
+  <player controller="6f1d2b61-d5a0-11cf-bfc7-444553540000">Samuel</player>
+  <controllers>
+    <controller id="6f1d2b61-d5a0-11cf-bfc7-444553540000">
+      <key action="left">30, 203, </key>
+      <key action="right">32, 205, </key>
+      <key action="down">31, 208, </key>
+      <key action="rotate">17, 200, </key>
+      <key action="direct">16, 157, </key>
+      <key action="pause">15, 28, </key>
+    </controller>
+    <controller id="2c8699d0-b9ff-11dc-8001-444553540000">
+      <key action="left">AxisX-, -, </key>
+      <key action="right">AxisX+, -, </key>
+      <key action="down">AxisY+, -, </key>
+      <key action="rotate">0, -, </key>
+      <key action="direct">2, -, </key>
+      <key action="pause">9, -, </key>
+    </controller>
+  </controllers>
+</setting>

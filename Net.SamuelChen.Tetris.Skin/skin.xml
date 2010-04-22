@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<skin>
+  <images>
+    <img name="blank">blockBlank.bmp</img>
+    <img name="bomb">blockBomb.bmp</img>
+    <img name="destory">blockBomb.bmp</img>
+    <img name="normal">blockNormal.bmp</img>
+    <img name="wall">blockWall.bmp</img>
+    <img name="roadblock">blockRoadblock.bmp</img>
+    <img name="blocks">blocks.bmp</img>
+  </images>
+  <strings>
+    <string name="app_name">#Tetris</string>
+    <string name="tetris">Tetris</string>
+    <string name="player">Player</string>
+    <string name="controller">Controller</string>
+    <string name="ready!">Ready!</string>
+    <string name="pause!">Pause!</string>
+    <string name="game_over!">Game Over!</string>
+    <string name="defeated!">Defeated!</string>
+    <main>
+      
+    </main>
+    <menu>
+      <!-- uses "^" before a letter for shortcut in menu.-->
+      <string name="mn_game">^Game</string>
+      <string name="mn_setting">^Setting</string>
+      <string name="mn_help">^Help</string>
+      <string name="mn_options">^Options</string>
+      <string name="mn_new">^New</string>
+      <string name="mn_exit">E^xit</string>
+      <string name="mn_about">^About</string>
+    </menu>
+    <options>
+      <string name="op_title">Options</string>
+      <string name="op_tab_general">General</string>
+      <string name="op_tab_controller">Controller</string>
+      <string name="op_btn_apply">^Apply</string>
+      <string name="op_btn_ok">^OK</string>
+      <string name="op_btn_cancel">^Cancel</string>
+      <string name="op_btn_addcontroller">Add Con^troller</string>
+      <string name="op_btn_removecontroller">^Remove Controller</string>
+    </options>
+    <wizard>
+      <string name="wiz_btn_next">^Next</string>
+      <string name="wiz_btn_prev">^Prev</string>
+      <string name="wiz_btn_finish">^Finish</string>
+      <string name="wiz_btn_cancel">^Cancel</string>
+      <string name="wiz_game_type_prompt">Choose a game type :</string>
+      <string name="wiz_rdo_single">^Single Player</string>
+      <string name="wiz_rdo_multiple">^Multiple Players</string>
+      <string name="wiz_rdo_host">^Host a network game</string>
+      <string name="wiz_rdo_client">^Join a network game</string>
+      <string name="wiz_col_player">Player Name</string>
+      <string name="wiz_col_controller">Controller</string>
+      <string name="wiz_remove_selected_player">Remove selected player.</string>
+      <string name="wiz_summary">
+        Summary:
+        ------------------------------------
+          Game Type: {0}
+          
+          Players:
+          {1}
+      </string>
+    </wizard>
+    <error>
+      <string name="error">Error</string>
+      <string name="err_duplicate_value">Duplicate values find, please check your input.</string>
+      <string name="err_invalid_player_name">Player name ({0}) is invalid.</string>
+    </error>
+  </strings>
+  <fonts>
+    <font name="status"></font>
+  </fonts>
+</skin>
