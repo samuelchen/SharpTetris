@@ -30,6 +30,7 @@
             this.colPlayer = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colController = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.colRemove = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.colAdd = new System.Windows.Forms.DataGridViewButtonColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dgvPlayers)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
@@ -63,23 +64,24 @@
             this.dgvPlayers.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colPlayer,
             this.colController,
-            this.colRemove});
+            this.colRemove,
+            this.colAdd});
             this.dgvPlayers.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgvPlayers.Location = new System.Drawing.Point(23, 3);
+            this.dgvPlayers.Location = new System.Drawing.Point(12, 3);
             this.dgvPlayers.MultiSelect = false;
             this.dgvPlayers.Name = "dgvPlayers";
             this.dgvPlayers.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
             this.dgvPlayers.RowHeadersVisible = false;
             this.dgvPlayers.ShowCellErrors = false;
             this.dgvPlayers.ShowRowErrors = false;
-            this.dgvPlayers.Size = new System.Drawing.Size(374, 114);
+            this.dgvPlayers.Size = new System.Drawing.Size(385, 114);
             this.dgvPlayers.TabIndex = 2;
             // 
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 5.013193F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 94.98681F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 2.25F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 97.75F));
             this.tableLayoutPanel1.Controls.Add(this.dgvPlayers, 1, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
@@ -91,12 +93,14 @@
             // 
             // colPlayer
             // 
+            this.colPlayer.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.colPlayer.FillWeight = 162.2434F;
             this.colPlayer.HeaderText = "player name";
             this.colPlayer.Name = "colPlayer";
             // 
             // colController
             // 
+            this.colController.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.colController.FillWeight = 162.2434F;
             this.colController.HeaderText = "controller";
             this.colController.Name = "colController";
@@ -104,7 +108,6 @@
             // colRemove
             // 
             this.colRemove.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.colRemove.FillWeight = 43.02588F;
             this.colRemove.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.colRemove.HeaderText = "-";
             this.colRemove.Name = "colRemove";
@@ -113,6 +116,18 @@
             this.colRemove.Text = "-";
             this.colRemove.UseColumnTextForButtonValue = true;
             this.colRemove.Width = 20;
+            // 
+            // colAdd
+            // 
+            this.colAdd.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.colAdd.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.colAdd.HeaderText = "+";
+            this.colAdd.Name = "colAdd";
+            this.colAdd.ReadOnly = true;
+            this.colAdd.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.colAdd.Text = "+";
+            this.colAdd.UseColumnTextForButtonValue = true;
+            this.colAdd.Width = 20;
             // 
             // WizPageMultiPlayer
             // 
@@ -139,5 +154,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colPlayer;
         private System.Windows.Forms.DataGridViewComboBoxColumn colController;
         private System.Windows.Forms.DataGridViewButtonColumn colRemove;
+        private System.Windows.Forms.DataGridViewButtonColumn colAdd;
     }
 }

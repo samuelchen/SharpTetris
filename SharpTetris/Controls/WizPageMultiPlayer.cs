@@ -58,6 +58,7 @@ namespace Net.SamuelChen.Tetris {
             foreach (string id in m_controllerIds) {
                 colController.Items.Add(id);
             }
+            dgvPlayers.Rows.Add();
             dgvPlayers.Rows[0].Cells[0].Value = m_setting.DefaultPlayerName;
             if (m_controllerIds.Contains(m_setting.DefaultPlayerControllerId))
                 dgvPlayers.Rows[0].Cells[1].Value = m_setting.DefaultPlayerControllerId;
@@ -72,8 +73,14 @@ namespace Net.SamuelChen.Tetris {
         void dgvPlayers_CellContentClick(object sender, DataGridViewCellEventArgs e) {
             if (e.RowIndex < 0 || e.ColumnIndex < 0)
                 return;
+            if (dgvPlayers.Rows[e.RowIndex].IsNewRow)
+                return;
+            
             if (2 == e.ColumnIndex && e.RowIndex < dgvPlayers.Rows.Count)
                 dgvPlayers.Rows.RemoveAt(e.RowIndex);
+            if (3 == e.ColumnIndex)
+                dgvPlayers.Rows.Insert(e.RowIndex + 1, new DataGridViewRow());
+
         }
 
         void dgvPlayers_Validating(object sender, CancelEventArgs e) {
