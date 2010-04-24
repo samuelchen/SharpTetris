@@ -22,7 +22,7 @@ namespace Net.SamuelChen.Tetris.Blocks {
 
     /// <summary>
     /// The basic part of Tetris. 
-    /// A sharp is combined with several blocks.
+    /// A shape is combined with several blocks.
     /// </summary>
     public class Block {
         public int X;			    // pos X (game cell based)

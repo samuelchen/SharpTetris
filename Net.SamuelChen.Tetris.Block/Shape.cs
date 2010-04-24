@@ -1,6 +1,6 @@
 
 //=======================================================================
-// <copyright file="Sharp.cs" company="Samuel Chen Studio">
+// <copyright file="Shape.cs" company="Samuel Chen Studio">
 //     Copyright (c) 2010 Samuel Chen Studio. All rights reserved.
 //     author   : Samuel Chen
 //     purpose  : 
@@ -23,27 +23,27 @@ namespace Net.SamuelChen.Tetris.Blocks {
     }
 
     /// <summary>
-    /// Net.SamuelChen.Tetris.Blocks.Sharp represents the moving staff on the screen in Tetris.
+    /// Net.SamuelChen.Tetris.Blocks.Shape represents the moving staff on the screen in Tetris.
     /// It is the major part of the game.
     /// </summary>
-    public class Sharp {
+    public class Shape {
 
         public const int MIN_BLOCK_NUM = 2;
         public const int MAX_BLOCK_NUM = 8;
         public const int DEFAULT_BLOCK_NUM = 4;          // Default blocks quantity.
 
-        protected Block[] m_arrBlocks;                  // The blocks array in the sharp
-        protected int m_nBlockNum = DEFAULT_BLOCK_NUM;    // Quantity of the blocks in a sharp.
+        protected Block[] m_arrBlocks;                  // The blocks array in the shape
+        protected int m_nBlockNum = DEFAULT_BLOCK_NUM;    // Quantity of the blocks in a shape.
 
         /// <summary>
-        /// Moved event will be triggered while a sharp moved.
+        /// Moved event will be triggered while a shape moved.
         /// </summary>
-        public event SharpMovingHandler Moved;
+        public event ShapeMovingHandler Moved;
 
         /// <summary>
         /// ctor()
         /// </summary>
-        public Sharp() {
+        public Shape() {
             m_arrBlocks = new Block[m_nBlockNum];
         }
 
@@ -51,18 +51,18 @@ namespace Net.SamuelChen.Tetris.Blocks {
         /// ctor(nBlockNum)
         /// </summary>
         /// <param name="nBlockNum">The blocks quantity.</param>
-        public Sharp(int nBlockNum) {
+        public Shape(int nBlockNum) {
 
             if (nBlockNum > 8 || nBlockNum < 2)
                 // That's too many. We uses default.
-                m_nBlockNum = Sharp.DEFAULT_BLOCK_NUM;
+                m_nBlockNum = Shape.DEFAULT_BLOCK_NUM;
             else
                 m_nBlockNum = nBlockNum;
             m_arrBlocks = new Block[m_nBlockNum];
         }
 
         /// <summary>
-        /// The instances of blocks in this sharp.
+        /// The instances of blocks in this shape.
         /// </summary>
         public Block[] Blocks {
             get {
@@ -75,7 +75,7 @@ namespace Net.SamuelChen.Tetris.Blocks {
         }
 
         /// <summary>
-        /// The sharp moves 1 cell(s). (1 block equals 1 cell)
+        /// The shape moves 1 cell(s). (1 block equals 1 cell)
         /// </summary>
         /// <param name="theDirection">The moving direction</param>
         public void Move(EnumMoving theDirection) {
@@ -104,11 +104,11 @@ namespace Net.SamuelChen.Tetris.Blocks {
 
             //引发事件
             if (null != Moved)
-                Moved(this, new SharpMovingEventArgs(theDirection));
+                Moved(this, new ShapeMovingEventArgs(theDirection));
         }
 
         /// <summary>
-        /// The sharp moves n cell(s). (1 block equals 1 cell)
+        /// The shape moves n cell(s). (1 block equals 1 cell)
         /// The cells number to move is specified.
         /// </summary>
         /// <param name="theDirection">The moving direction</param>
@@ -118,7 +118,7 @@ namespace Net.SamuelChen.Tetris.Blocks {
         }
 
         /// <summary>
-        /// Rotate a sharp in a clockwise direction.
+        /// Rotate a shape in a clockwise direction.
         /// </summary>
         protected void Rotate() {
             ///TODO: It's not a perfect implementation. We should make it pix based.

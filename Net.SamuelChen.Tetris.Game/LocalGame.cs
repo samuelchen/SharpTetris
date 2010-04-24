@@ -102,7 +102,7 @@ namespace Net.SamuelChen.Tetris.Game {
             foreach (Player player in this.Players.Values) {
                 PlayPanel panel = player.PlayFiled;
 
-                // move sharp
+                // move shape
                 if (null != panel)
                     panel.Go();
 

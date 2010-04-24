@@ -159,7 +159,7 @@ namespace Net.SamuelChen.Tetris.Game {
                     continue;
 
                 panel.Status = EnumGameStatus.Running;
-                panel.CreateNextSharp();
+                panel.CreateNextShape();
                 panel.RePaint();
 
                 ctrlr.Pressed += new ControllerPressHandler(ctrlr_Pressed);

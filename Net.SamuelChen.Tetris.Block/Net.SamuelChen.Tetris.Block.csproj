@@ -36,10 +36,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Sharp.cs" />
-    <Compile Include="SharpEvent.cs" />
-    <Compile Include="SharpFactories\SharpFactory4.cs" />
-    <Compile Include="SharpFactory.cs" />
+    <Compile Include="Shape.cs" />
+    <Compile Include="ShapeEvent.cs" />
+    <Compile Include="ShapeFactory\ShapeFactory4.cs" />
+    <Compile Include="ShapeFactory.cs" />
     <Compile Include="Block.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
