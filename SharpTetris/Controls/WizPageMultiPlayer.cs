@@ -67,7 +67,7 @@ namespace Net.SamuelChen.Tetris {
             dgvPlayers.CellContentClick += new DataGridViewCellEventHandler(dgvPlayers_CellContentClick);
             dgvPlayers.Validating += new CancelEventHandler(dgvPlayers_Validating);
             
-            LoadSkin();
+            LoadSkins();
         }
 
         void dgvPlayers_CellContentClick(object sender, DataGridViewCellEventArgs e) {
@@ -110,10 +110,10 @@ namespace Net.SamuelChen.Tetris {
 
         }
 
-        private void LoadSkin() {
-            dgvPlayers.Columns[0].HeaderText = m_skin.GetString("wiz_col_player");
-            dgvPlayers.Columns[1].HeaderText = m_skin.GetString("wiz_col_controller");
-            dgvPlayers.Columns[2].ToolTipText = m_skin.GetString("wiz_remove_selected_player");
+        private void LoadSkins() {
+            dgvPlayers.Columns[0].HeaderText = m_skin.GetString("wiz_muti_col_player");
+            dgvPlayers.Columns[1].HeaderText = m_skin.GetString("wiz_muti_col_controller");
+            dgvPlayers.Columns[2].ToolTipText = m_skin.GetString("wiz_muti_remove_selected_player");
         }
 
         #region IWizardPage Members

@@ -32,6 +32,11 @@ namespace Net.SamuelChen.Tetris.Game
         public string Name { get; set; }
 
         /// <summary>
+        /// User data.
+        /// </summary>
+        public object Tag { get; set; }
+
+        /// <summary>
         /// Controller belongs to current player
         /// </summary>
         public IController Controller { get; set; }

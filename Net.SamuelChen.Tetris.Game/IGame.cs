@@ -14,6 +14,7 @@ namespace Net.SamuelChen.Tetris.Game {
     public interface IGame {
         IDictionary<string, Player> Players { get; }
         EnumGameStatus Status { get; }
+        object Tag { get; set; }
         void AddPlayer(Player player);
         void RemovePlayer(Player player);
 

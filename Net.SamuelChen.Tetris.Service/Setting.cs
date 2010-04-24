@@ -17,6 +17,7 @@ namespace Net.SamuelChen.Tetris.Service {
         public Setting() {
             m_xmldoc = new XmlDocument();
             m_keymaps = new Dictionary<string, Dictionary<string, string>>();
+            m_general = new Dictionary<string,string>();
 
             string logName = "#Tetris";
 //            string logSource = "#Tetris";
@@ -26,12 +27,15 @@ namespace Net.SamuelChen.Tetris.Service {
 //}
             //EventLog log = new EventLog(logName);
             //log.ModifyOverflowPolicy(OverflowAction.OverwriteOlder, 1);
-            listener = new EventLogTraceListener(logName);
-            Trace.Listeners.Add(listener);
+            m_listener = new EventLogTraceListener(logName);
+            Trace.Listeners.Add(m_listener);
         }
 
         #region properties
 
+        /// <summary>
+        /// Setting singleton instance
+        /// </summary>
         public static Setting Instance {
             get {
                 if (null == m_instance)
@@ -40,18 +44,23 @@ namespace Net.SamuelChen.Tetris.Service {
             }
         }
 
-
+        /// <summary>
+        /// Setting file full path
+        /// </summary>
         public string SettingPath { get; set; }
+
+        /// <summary>
+        /// Default base path (directory only) of setting file.
+        /// Initialized as application path.
+        /// </summary>
         protected string DefaultPath { get { return AppDomain.CurrentDomain.BaseDirectory; } }
 
-
+        /// <summary>
+        /// Skin name. It's also the folder name which contains the skin.
+        /// </summary>
         public string Skin {
-            get {
-                return m_skin.InnerText;
-            }
-            set {
-                m_skin.InnerText = value;
-            }
+            get { return this.Get("skin"); }
+            set { this.Set("skin", value); }
         }
 
         /// <summary>
@@ -68,11 +77,28 @@ namespace Net.SamuelChen.Tetris.Service {
         }
         
         /// <summary>
-        /// The default player name.
+        /// The default player name in predefiend options.
         /// </summary>
-        public string DefaultPlayerName { get; set; }
+        public string DefaultPlayerName {
+            get { return this.Get("default_player"); }
+            set { this.Set("default_player", value); }
+        }
 
-        public string DefaultPlayerControllerId { get; set; }
+        /// <summary>
+        /// The default player controller guid in predefiend options.
+        /// </summary>
+        public string DefaultPlayerControllerId {
+            get { return this.Get("default_controller"); }
+            set { this.Set("default_controller", value); }
+        }
+
+        /// <summary>
+        /// Network port for network game.
+        /// </summary>
+        public string Port {
+            get { return this.Get("port"); }
+            set { this.Set("port", value); }
+        }
 
         #endregion
 
@@ -98,8 +124,10 @@ namespace Net.SamuelChen.Tetris.Service {
                     m_skin.InnerText = "default";
                 }
 
+                LoadGeneral();
                 LoadKeymaps();
-                LoadPlayers();
+                //LoadPlayers();
+                
 
             } catch (Exception err) {
 #if DEBUG
@@ -112,9 +140,20 @@ namespace Net.SamuelChen.Tetris.Service {
             return true;
         }
 
+        /// <summary>
+        /// Save setting to file specified in <code><see cref="SettingPath"/></code> property.
+        /// It's often the loaded setting file.
+        /// </summary>
+        /// <returns></returns>
         public bool Save() {
             return Save(this.SettingPath);
         }
+
+        /// <summary>
+        /// Save setting to specified path.
+        /// </summary>
+        /// <param name="filepath">Setting file name.</param>
+        /// <returns></returns>
         public bool Save(string filepath) {
             string path = string.Empty;
             try {
@@ -123,9 +162,10 @@ namespace Net.SamuelChen.Tetris.Service {
                 else
                     path = string.Format(@"{0}\{1}", this.DefaultPath, filepath);
 
+                SaveGeneral();
                 SaveKeymaps();
-                SavePlayers();
-
+                //SavePlayers();
+                
                 m_xmldoc.Save(path);
 
             } catch (Exception err) {
@@ -138,6 +178,8 @@ namespace Net.SamuelChen.Tetris.Service {
             return true;
         }
 
+        #region Clean up methods
+
         public void Clear() {
             ClearKeymaps();
         }
@@ -148,6 +190,8 @@ namespace Net.SamuelChen.Tetris.Service {
 
         public void ClearPlayers() {
         }
+
+        #endregion
 
         #region Keymap methods
 
@@ -289,47 +333,92 @@ namespace Net.SamuelChen.Tetris.Service {
 
         #endregion // Keymap methods
 
-        #region Player methods
+        #region General setting methods
 
-        #region public
-        
+        /// <summary>
+        /// Save general settings.
+        /// </summary>
+        protected void SaveGeneral() {
 
-        #endregion
+            XmlNode node, general;
+            XmlNodeList nodeList = m_xmldoc.GetElementsByTagName("general");
 
-        #region protected / private
-        protected void SavePlayers() {
-            XmlNodeList nodeList = m_xmldoc.GetElementsByTagName("player");
-            XmlNode node;
-            if (null == nodeList || 0 == nodeList.Count)
-                node = m_xmldoc.AppendChild(m_xmldoc.CreateElement("player"));
+            if (null == nodeList && nodeList.Count == 0)
+                general = m_xmldoc.CreateElement("general");
             else
-                node = nodeList[0];
-            node.RemoveAll();
-            XmlAttribute attr = m_xmldoc.CreateAttribute("controller");
-            attr.Value = this.DefaultPlayerControllerId;
-            node.Attributes.Append(attr);
-            node.InnerText = this.DefaultPlayerName;
+                general = nodeList[0];
+
+            foreach (KeyValuePair<string, string> item in m_general) {
+                string name = item.Key;
+                string value = item.Value;
+
+                node = general[name];
+
+                if (null == node) {
+                    node = m_xmldoc.CreateElement(name);
+                    general.AppendChild(node);
+                }
+
+                node.InnerText = value;
+            }
         }
 
-        protected void LoadPlayers() {
-            XmlNodeList nodeList = m_xmldoc.GetElementsByTagName("player");
-            if (null == nodeList || 0 == nodeList.Count)
+        protected void LoadGeneral() {
+
+            XmlNode general;
+            XmlNodeList nodeList = m_xmldoc.GetElementsByTagName("general");
+
+            if (null == nodeList && nodeList.Count == 0)
+                general = m_xmldoc.CreateElement("general");
+            else
+                general = nodeList[0];
+
+            m_general.Clear();
+            foreach (XmlNode node in general.ChildNodes){
+                m_general.Add(node.Name, node.InnerText);
+            }
+        }
+
+        /// <summary>
+        /// Set value for a general setting.
+        /// </summary>
+        /// <param name="name">the setting name</param>
+        /// <param name="value">the value to be set</param>
+        protected void Set(string name, string value) {
+            if (string.IsNullOrEmpty(name) || null == value)
                 return;
-            XmlNode node = nodeList[0];
-            this.DefaultPlayerControllerId = node.Attributes["controller"].Value;
-            this.DefaultPlayerName = node.InnerText;
+
+            if (m_general.ContainsKey(name))
+                m_general[name] = value;
+            else
+                m_general.Add(name, value);
+        }
+
+        /// <summary>
+        /// Get a general setting value.
+        /// </summary>
+        /// <param name="name">the setting name</param>
+        /// <returns></returns>
+        protected string Get(string name) {
+            if (string.IsNullOrEmpty(name))
+                return null;
+
+            if (!m_general.ContainsKey(name))
+                m_general.Add(name, string.Empty);
+
+            return m_general[name];
         }
 
         #endregion
-
-        #endregion // player methods
 
         #region Fields
         protected XmlDocument m_xmldoc;
         protected XmlNode m_skin = null;
         protected Dictionary<string, Dictionary<string, string>> m_keymaps;
+        private TraceListener m_listener;
+        private Dictionary<string, string> m_general;
+
         private static Setting m_instance;
-        TraceListener listener;
         #endregion
 
         #region IDisposable Members
@@ -340,7 +429,7 @@ namespace Net.SamuelChen.Tetris.Service {
             m_keymaps = null;
             m_skin = null;
             m_xmldoc = null;
-            listener.Dispose();
+            m_listener.Dispose();
         }
 
         #endregion

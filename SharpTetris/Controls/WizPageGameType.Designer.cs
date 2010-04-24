@@ -46,7 +46,7 @@
             // radioMultiple
             // 
             this.radioMultiple.AutoSize = true;
-            this.radioMultiple.Location = new System.Drawing.Point(50, 75);
+            this.radioMultiple.Location = new System.Drawing.Point(205, 40);
             this.radioMultiple.Name = "radioMultiple";
             this.radioMultiple.Size = new System.Drawing.Size(93, 17);
             this.radioMultiple.TabIndex = 1;
@@ -57,7 +57,7 @@
             // radioHost
             // 
             this.radioHost.AutoSize = true;
-            this.radioHost.Location = new System.Drawing.Point(170, 40);
+            this.radioHost.Location = new System.Drawing.Point(50, 75);
             this.radioHost.Name = "radioHost";
             this.radioHost.Size = new System.Drawing.Size(128, 17);
             this.radioHost.TabIndex = 2;
@@ -77,10 +77,10 @@
             // radioClient
             // 
             this.radioClient.AutoSize = true;
-            this.radioClient.Location = new System.Drawing.Point(170, 75);
+            this.radioClient.Location = new System.Drawing.Point(205, 75);
             this.radioClient.Name = "radioClient";
             this.radioClient.Size = new System.Drawing.Size(125, 17);
-            this.radioClient.TabIndex = 4;
+            this.radioClient.TabIndex = 3;
             this.radioClient.TabStop = true;
             this.radioClient.Tag = "C";
             this.radioClient.Text = "Join a network Game";
@@ -96,7 +96,7 @@
             this.Controls.Add(this.radioMultiple);
             this.Controls.Add(this.radioSingle);
             this.Name = "WizPageGameType";
-            this.Size = new System.Drawing.Size(400, 120);
+            this.Size = new System.Drawing.Size(400, 200);
             this.ResumeLayout(false);
             this.PerformLayout();
 

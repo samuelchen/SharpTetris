@@ -28,10 +28,11 @@ namespace Net.SamuelChen.Tetris {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
+#if !DEBUG
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
             Application.ThreadException += new System.Threading.ThreadExceptionEventHandler(Application_ThreadException);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
-
+#endif
 
             Setting.Instance.Load("setting.xml");
             Skins.Instance.Load(Setting.Instance.Skin);

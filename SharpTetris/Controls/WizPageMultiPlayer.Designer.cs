@@ -26,11 +26,11 @@
             this.lblPlayer = new System.Windows.Forms.Label();
             this.lblController = new System.Windows.Forms.Label();
             this.dgvPlayers = new System.Windows.Forms.DataGridView();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.colPlayer = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colController = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.colRemove = new System.Windows.Forms.DataGridViewButtonColumn();
             this.colAdd = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)(this.dgvPlayers)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
@@ -74,22 +74,8 @@
             this.dgvPlayers.RowHeadersVisible = false;
             this.dgvPlayers.ShowCellErrors = false;
             this.dgvPlayers.ShowRowErrors = false;
-            this.dgvPlayers.Size = new System.Drawing.Size(385, 114);
+            this.dgvPlayers.Size = new System.Drawing.Size(385, 194);
             this.dgvPlayers.TabIndex = 2;
-            // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 2.25F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 97.75F));
-            this.tableLayoutPanel1.Controls.Add(this.dgvPlayers, 1, 0);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 1;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(400, 120);
-            this.tableLayoutPanel1.TabIndex = 3;
             // 
             // colPlayer
             // 
@@ -129,6 +115,20 @@
             this.colAdd.UseColumnTextForButtonValue = true;
             this.colAdd.Width = 20;
             // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 2.25F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 97.75F));
+            this.tableLayoutPanel1.Controls.Add(this.dgvPlayers, 1, 0);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(400, 200);
+            this.tableLayoutPanel1.TabIndex = 3;
+            // 
             // WizPageMultiPlayer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -137,7 +137,7 @@
             this.Controls.Add(this.lblController);
             this.Controls.Add(this.lblPlayer);
             this.Name = "WizPageMultiPlayer";
-            this.Size = new System.Drawing.Size(400, 120);
+            this.Size = new System.Drawing.Size(400, 200);
             ((System.ComponentModel.ISupportInitialize)(this.dgvPlayers)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);

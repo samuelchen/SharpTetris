@@ -47,6 +47,11 @@ namespace Net.SamuelChen.Tetris.Controller {
         public string Name { get; protected set; }
 
         /// <summary>
+        /// user data
+        /// </summary>
+        public object Tag { get; set; }
+
+        /// <summary>
         /// The controller type.
         /// </summary>
         public EnumControllerType Type { get; protected set; }

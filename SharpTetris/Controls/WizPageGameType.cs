@@ -46,11 +46,11 @@ namespace Net.SamuelChen.Tetris {
         }
 
         private void LoadSkin() {
-            lblPrompt.Text = m_skin.GetString("wiz_game_type_prompt");
-            radioSingle.Text = m_skin.GetShortCutString("wiz_rdo_single");
-            radioMultiple.Text = m_skin.GetShortCutString("wiz_rdo_multiple");
-            radioHost.Text = m_skin.GetShortCutString("wiz_rdo_host");
-            radioClient.Text = m_skin.GetShortCutString("wiz_rdo_client");
+            lblPrompt.Text = m_skin.GetString("wiz_type_prompt");
+            radioSingle.Text = m_skin.GetShortCutString("wiz_type_rdo_single");
+            radioMultiple.Text = m_skin.GetShortCutString("wiz_type_rdo_multiple");
+            radioHost.Text = m_skin.GetShortCutString("wiz_type_rdo_host");
+            radioClient.Text = m_skin.GetShortCutString("wiz_type_rdo_client");
         }
 
         #region IWizardPage Members

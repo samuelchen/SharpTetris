@@ -37,7 +37,7 @@
             this.txtSummary.Name = "txtSummary";
             this.txtSummary.ReadOnly = true;
             this.txtSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtSummary.Size = new System.Drawing.Size(400, 120);
+            this.txtSummary.Size = new System.Drawing.Size(400, 200);
             this.txtSummary.TabIndex = 0;
             // 
             // WizPageSummary
@@ -46,7 +46,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.txtSummary);
             this.Name = "WizPageSummary";
-            this.Size = new System.Drawing.Size(400, 120);
+            this.Size = new System.Drawing.Size(400, 200);
             this.ResumeLayout(false);
             this.PerformLayout();
 

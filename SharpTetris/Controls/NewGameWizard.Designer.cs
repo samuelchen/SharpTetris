@@ -26,11 +26,8 @@
             this.layoutMain = new System.Windows.Forms.TableLayoutPanel();
             this.PictureBanner = new System.Windows.Forms.PictureBox();
             this.panelPages = new System.Windows.Forms.Panel();
-            this.pagePlayers = new Net.SamuelChen.Tetris.WizPageMultiPlayer();
-            this.pageGameType = new Net.SamuelChen.Tetris.WizPageGameType();
             this.layoutMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBanner)).BeginInit();
-            this.panelPages.SuspendLayout();
             this.SuspendLayout();
             // 
             // layoutMain
@@ -60,28 +57,11 @@
             // 
             // panelPages
             // 
-            this.panelPages.Controls.Add(this.pagePlayers);
-            this.panelPages.Controls.Add(this.pageGameType);
             this.panelPages.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelPages.Location = new System.Drawing.Point(3, 110);
             this.panelPages.Name = "panelPages";
             this.panelPages.Size = new System.Drawing.Size(481, 216);
             this.panelPages.TabIndex = 3;
-            // 
-            // pagePlayers
-            // 
-            this.pagePlayers.Location = new System.Drawing.Point(48, 19);
-            this.pagePlayers.Name = "pagePlayers";
-            this.pagePlayers.Size = new System.Drawing.Size(400, 120);
-            this.pagePlayers.TabIndex = 1;
-            this.pagePlayers.Visible = false;
-            // 
-            // pageGameType
-            // 
-            this.pageGameType.Location = new System.Drawing.Point(3, 3);
-            this.pageGameType.Name = "pageGameType";
-            this.pageGameType.Size = new System.Drawing.Size(347, 120);
-            this.pageGameType.TabIndex = 0;
             // 
             // NewGameWizard
             // 
@@ -92,7 +72,6 @@
             this.Size = new System.Drawing.Size(487, 341);
             this.layoutMain.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.PictureBanner)).EndInit();
-            this.panelPages.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -101,8 +80,6 @@
 
         private System.Windows.Forms.TableLayoutPanel layoutMain;
         private System.Windows.Forms.Panel panelPages;
-        private Net.SamuelChen.Tetris.WizPageGameType pageGameType;
-        private WizPageMultiPlayer pagePlayers;
         public System.Windows.Forms.PictureBox PictureBanner;
     }
 }

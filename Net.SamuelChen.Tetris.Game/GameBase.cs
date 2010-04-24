@@ -27,6 +27,8 @@ namespace Net.SamuelChen.Tetris.Game {
 
         public EnumGameStatus Status { get; protected set; }
 
+        public object Tag { get; set; }
+
         #region player management
 
         /// <summary>

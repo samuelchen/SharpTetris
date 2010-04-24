@@ -29,8 +29,11 @@ namespace Net.SamuelChen.Tetris {
         protected override void OnLoad(EventArgs e) {
             base.OnLoad(e);
 
+            // Add pages by order
             m_pages.Add(wizardNewGame.AddPage(new WizPageGameType()));
             m_pages.Add(wizardNewGame.AddPage(new WizPageMultiPlayer()));
+            m_pages.Add(wizardNewGame.AddPage(new WizPageHost()));
+            m_pages.Add(wizardNewGame.AddPage(new WizPageClient()));
             m_pages.Add(wizardNewGame.AddPage(new WizPageSummary()));
             wizardNewGame.ShowFirst();
         }

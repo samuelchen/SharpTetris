@@ -46,21 +46,47 @@
       <string name="wiz_btn_prev">^Prev</string>
       <string name="wiz_btn_finish">^Finish</string>
       <string name="wiz_btn_cancel">^Cancel</string>
-      <string name="wiz_game_type_prompt">Choose a game type :</string>
-      <string name="wiz_rdo_single">^Single Player</string>
-      <string name="wiz_rdo_multiple">^Multiple Players</string>
-      <string name="wiz_rdo_host">^Host a network game</string>
-      <string name="wiz_rdo_client">^Join a network game</string>
-      <string name="wiz_col_player">Player Name</string>
-      <string name="wiz_col_controller">Controller</string>
-      <string name="wiz_remove_selected_player">Remove selected player.</string>
+      
+      <string name="wiz_type_prompt">Choose a game type :</string>
+      <string name="wiz_type_rdo_single">^Single Player</string>
+      <string name="wiz_type_rdo_multiple">^Multiple Players</string>
+      <string name="wiz_type_rdo_host">^Host a network game</string>
+      <string name="wiz_type_rdo_client">^Join a remote game</string>
+      
+      <string name="wiz_muti_col_player">Player Name</string>
+      <string name="wiz_muti_col_controller">Controller</string>
+      <string name="wiz_muti_remove_selected_player">Remove selected player.</string>
+
+      <string name="wiz_host_prompt">Please input host informations. Leave the default value if you don't know.</string>
+      <string name="wiz_host_name">Game ^Name:</string>
+      <string name="wiz_host_port">Network Por^t:</string>
+      <string name="wiz_host_player_number">Player Nu^mber:</string>
+      <string name="wiz_host_btn_copy">^Copy to clipboard</string>
+      <string name="wiz_host_info_display">
+        Please tell your players the game host information:
+        ------------ COPY FROM BELOW ---------------
+        {0}
+        ------------ COPY UNTIL ABOVE ---------------
+      </string>
+      <string name="wiz_host_info">
+        Host IP Address : {0} #
+        Network Port    : {1} #
+        Max Players     : {2} #
+      </string>
+
+      <string name="wiz_client_prompt">Please input host informations. Request and copy from your host if you don't know.</string>
+      <string name="wiz_client_name">Your ^Name:</string>
+      <string name="wiz_client_port">Network Por^t:</string>
+      <string name="wiz_client_player_number">Host ^IP Address:</string>
+      <string name="wiz_client_btn_copy">^Paste from clipboard</string>
+
       <string name="wiz_summary">
         Summary:
         ------------------------------------
-          Game Type: {0}
-          
-          Players:
-          {1}
+        Game Type: {0}
+
+        Players:
+        {1}
       </string>
     </wizard>
     <error>

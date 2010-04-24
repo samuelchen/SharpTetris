@@ -43,8 +43,8 @@ namespace Net.SamuelChen.Tetris {
                     if (null == player)
                         continue;
                     sb.AppendLine(string.Format("\t{0}: {1}\t{2}: {3}",
-                        m_skin.GetString("wiz_col_player"), player.Name,
-                        m_skin.GetString("wiz_col_controller"),
+                        m_skin.GetString("wiz_muti_col_player"), player.Name,
+                        m_skin.GetString("wiz_muti_col_controller"),
                         (null == player.Controller ? "-" : player.Controller.Name)
                         ));
                 }
@@ -53,8 +53,8 @@ namespace Net.SamuelChen.Tetris {
                 if (null != players && players.Count > 0 && null != (player = players[0])) {
 
                     sb.AppendLine(string.Format("\t{0}: {1}\t{2}: {3}",
-                        m_skin.GetString("wiz_col_player"), player.Name,
-                        m_skin.GetString("wiz_col_controller"),
+                        m_skin.GetString("wiz_muti_col_player"), player.Name,
+                        m_skin.GetString("wiz_muti_col_controller"),
                         (null == player.Controller ? "-" : player.Controller.Name)
                         ));
                 }

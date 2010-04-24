@@ -25,9 +25,30 @@ namespace Net.SamuelChen.Tetris.Blocks {
     /// A shape is combined with several blocks.
     /// </summary>
     public class Block {
-        public int X;			    // pos X (game cell based)
-        public int Y;			    // pos Y (game cell based)
-        public EnumBlockType Type;	// the type of the block
+
+        #region Properties
+
+        /// <summary>
+        /// pos X (game cell based)
+        /// </summary>
+        public int X { get; set; }
+
+        /// <summary>
+        /// pos Y (game cell based)
+        /// </summary>
+        public int Y { get; set; }
+
+        /// <summary>
+        /// the type of the block
+        /// </summary>
+        public EnumBlockType Type { get; set; }
+
+        /// <summary>
+        /// User data
+        /// </summary>
+        public object Tag { get; set; }
+
+        #endregion
 
         public Block() {
             Type = EnumBlockType.Normal;

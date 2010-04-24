@@ -18,6 +18,7 @@ using Net.SamuelChen.Tetris.Service;
 using Net.SamuelChen.Tetris.Controller;
 using Net.SamuelChen.Tetris.Skin;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Net.SamuelChen.Tetris.Game {
 
@@ -35,6 +36,8 @@ namespace Net.SamuelChen.Tetris.Game {
             this.Columns = 17;
             this.Rows = 22;
             this.BlockWidth = this.BlockHeight = 16;
+
+            m_rnd = new Random(System.DateTime.Now.Millisecond);
 
             Initialize();
         }
@@ -132,7 +135,7 @@ namespace Net.SamuelChen.Tetris.Game {
         }
 
         public void Go(object act) {
-            EnumMoving move = (EnumMoving) act;
+            EnumMoving move = (EnumMoving)act;
             if (move == EnumMoving.Pause) {
                 if (this.Status == EnumGameStatus.Paused)
                     this.Status = EnumGameStatus.Running;
@@ -222,19 +225,18 @@ namespace Net.SamuelChen.Tetris.Game {
                 return;
 
             // destory effective drawing
-            for (int i = 0; i < lines.Count; i++) {
-                for (int j = 1; j < Columns - 1; j++) {
-                    m_Cells[lines[i], j].Type = EnumBlockType.Destory;
+            bool blank = false;
+            for (int k = 0; k < 6; k++) {
+                // flash 3 times (6/2)
+                for (int i = 0; i < lines.Count; i++) {
+                    for (int j = 1; j < Columns - 1; j++) {
+                        m_Cells[lines[i], j].Type = blank ? EnumBlockType.Blank : EnumBlockType.Destory;
+                    }
                 }
+                RePaint();
+                System.Threading.Thread.Sleep(250);
+                blank = !blank;
             }
-            RePaint();
-            System.Threading.Thread.Sleep(120);
-            for (int i = 0; i < lines.Count; i++) {
-                for (int j = 1; j < Columns - 1; j++) {
-                    m_Cells[lines[i], j].Type = EnumBlockType.RoadBlock;
-                }
-            }
-            RePaint();
 
             // move the upper rows down
             for (int l = 0; l < lines.Count; l++) {
@@ -281,6 +283,7 @@ namespace Net.SamuelChen.Tetris.Game {
                 m_curShape.Moved += new ShapeMovingHandler(OnCurShape_Moved);
 
             m_nextShape = factory.CreateRandomShape();
+            m_nextShape.Tag = m_rnd.Next(0, 5); // image index
 
             //if (null != m_nextShape && null != m_InfoPanel) {
             //    m_InfoPanel.Block = m_nextShape;
@@ -303,7 +306,7 @@ namespace Net.SamuelChen.Tetris.Game {
 
             if (this.CanMove(theDirection)) {
                 m_curShape.Move(theDirection);
-            }else if (EnumMoving.Down == theDirection) {
+            } else if (EnumMoving.Down == theDirection) {
                 // can not be moving down
                 if (null != m_curShape) {
                     DestroyCurShape();
@@ -316,7 +319,7 @@ namespace Net.SamuelChen.Tetris.Game {
                     CreateNextShape();
                 return false;
             }
-                
+
 
             return true;
         }
@@ -458,7 +461,7 @@ namespace Net.SamuelChen.Tetris.Game {
                     Brushes.Red, 60, 150);
             }
 #if DEBUG
-            e.Graphics.DrawString(sDebug, new Font("tahoma", 8), Brushes.Blue, 10, 20);
+            e.Graphics.DrawString(DebugString, new Font("tahoma", 8), Brushes.Blue, 10, 20);
 #endif
         }
 
@@ -483,8 +486,9 @@ namespace Net.SamuelChen.Tetris.Game {
                 return;
             }
 
+
             for (int i = 0; i < m_curShape.Blocks.Length; i++) {
-                DrawBlock(graph, m_curShape.Blocks[i]);
+                DrawBlock(graph, m_curShape.Blocks[i], (int)m_curShape.Tag);
             }
         }
 
@@ -492,8 +496,17 @@ namespace Net.SamuelChen.Tetris.Game {
         /// Draw a block
         /// </summary>
         /// <param name="graph"></param>
-        /// <param name="theDiamond">block instance</param>
+        /// <param name="block">block instance</param>
         protected void DrawBlock(Graphics graph, Block block) {
+            DrawBlock(graph, block, 0);
+        }
+
+        /// <summary>
+        /// Draw a block
+        /// </summary>
+        /// <param name="graph"></param>
+        /// <param name="block">block instance</param>
+        protected void DrawBlock(Graphics graph, Block block, int imageIndex) {
             Image blockImage;
             string sResName;
             //if (block.Type == EnumBlockType.Blank)
@@ -501,9 +514,13 @@ namespace Net.SamuelChen.Tetris.Game {
 
             sResName = block.Type.ToString().ToLower();
 
-            blockImage = m_skin.GetImage(sResName);
+#if DEBUG
+            if (Setting.Instance.Skin.Equals("web20", StringComparison.CurrentCultureIgnoreCase))
+                imageIndex = 1;
+#endif
+            blockImage = m_skin.GetImage(sResName, imageIndex);
             if (null != blockImage)
-                graph.DrawImage(blockImage, block.X * BlockWidth, block.Y * BlockHeight);
+                graph.DrawImage(blockImage, block.X * BlockWidth, block.Y * BlockHeight, BlockWidth, BlockHeight);
         }
 
         #endregion
@@ -576,9 +593,12 @@ namespace Net.SamuelChen.Tetris.Game {
         protected int m_minBlocks;            // Min block number of a shape
         protected int m_maxBlocks;            // Max block number of a shape
 
-        //protected Setting m_setting = Setting.Instance;
+        protected Random m_rnd;
         protected Skins m_skin = Skins.Instance;
-        public string sDebug = string.Empty;
+
+#if DEBUG
+        public string DebugString = string.Empty;
+#endif
 
         #endregion
     }

@@ -20,6 +20,11 @@ namespace Net.SamuelChen.Tetris {
         public MainForm() {
             InitializeComponent();
             LoadSkins();
+
+            for (int i = 0; i < mnMain.Items.Count; i++) {
+                ToolStripItem mi = mnMain.Items[i];
+                mi.Click += new EventHandler(OnAllMenu_Click);
+            }
         }
 
         #region events

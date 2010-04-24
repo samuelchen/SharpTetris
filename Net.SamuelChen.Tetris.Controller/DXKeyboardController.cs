@@ -23,15 +23,16 @@ namespace Net.SamuelChen.Tetris.Controller {
 
         public override bool Poll() {
             Device dev = this.Device;
+            Key[] devKeys = null;
             try {
                 dev.Poll();
+                devKeys = dev.GetPressedKeys();
             } catch (NotAcquiredException) {
                 System.Diagnostics.Trace.TraceWarning("Device {0} ({1}) is not acquired.\n", this.Name, this.ID);
                 return false;
             }
 
             List<ControllerKey> keys = new List<ControllerKey>();
-            Key[] devKeys = dev.GetPressedKeys();
             for (int i = 0; i < devKeys.Length; i++) {
                 if (devKeys[i] > 0)
                     keys.Add(new ControllerKey((int)devKeys[i]));

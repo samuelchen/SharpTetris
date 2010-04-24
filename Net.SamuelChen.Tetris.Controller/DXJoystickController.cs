@@ -31,14 +31,15 @@ namespace Net.SamuelChen.Tetris.Controller {
             }
 
             Device dev = this.Device;
+            JoystickState state;
             try {
                 dev.Poll();
+                state = dev.CurrentJoystickState;
             } catch (NotAcquiredException) {
                 System.Diagnostics.Trace.TraceWarning("Device {0} ({1}) is not acquired.\n", this.Name, this.ID);
                 return false;
             }
 
-            JoystickState state = dev.CurrentJoystickState;
             List<ControllerKey> keys = new List<ControllerKey>();
 
             byte[] btns = state.GetButtons();

@@ -25,9 +25,6 @@ namespace Net.SamuelChen.Tetris {
 
             m_pages = new LinkedList<IWizardPage>();
 
-            pageGameType.Dock = DockStyle.Fill;
-            pagePlayers.Dock = DockStyle.Fill;
-
             m_curPage = m_pages.First;
             LoadSkins();
         }

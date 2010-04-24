@@ -25,7 +25,7 @@ namespace Net.SamuelChen.Tetris.Skin {
             this.SkinPath = string.Format(@"{0}\skin\",
                 AppDomain.CurrentDomain.BaseDirectory);
             m_xmldoc = new XmlDocument();
-            m_images = new Dictionary<string, Image>();
+            m_images = new Dictionary<string, IList<Image>>();
             m_strings = new Dictionary<string, string>();
         }
 
@@ -80,9 +80,22 @@ namespace Net.SamuelChen.Tetris.Skin {
         }
 
         public Image GetImage(string name) {
-            if (null == name || !m_images.ContainsKey(name))
+            return GetImage(name, 0);
+        }
+
+        public Image GetImage(string name, int idx) {
+            if (null == name || !m_images.ContainsKey(name) || idx < 0)
                 return null;
-            return m_images[name];
+
+            IList<Image> imgs = m_images[name];
+
+            if (null != imgs) {
+                if (imgs.Count <= idx)
+                    return imgs[0];
+                return imgs[idx];
+            }
+
+            return null;
         }
 
         protected bool LoadStrings() {
@@ -120,7 +133,7 @@ namespace Net.SamuelChen.Tetris.Skin {
                 XmlNode node;
                 for (int i = 0; i < nodeList.Count; i++) {
                     node = nodeList[i];
-                    m_images.Add(node.Attributes["name"].Value, LoadImage(node.InnerText));
+                    m_images.Add(node.Attributes["name"].Value, LoadImages(node.InnerText));
                     node = node.NextSibling;
                 }
                 return true;
@@ -135,10 +148,27 @@ namespace Net.SamuelChen.Tetris.Skin {
         }
 
         /// <summary>
-        /// Load setting from a xml file.
+        /// Load images into image list from give image pathes.
         /// </summary>
         /// <param name="filepath">the file path</param>
-        protected Image LoadImage(string filepath) {
+        protected IList<Image> LoadImages(string filepathes) {
+            string[] pathes = filepathes.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            if (null == pathes || pathes.Length == 0)
+                return null;
+
+            List<Image> imgs = new List<Image>();
+            for (int i = 0; i < pathes.Length; i++) {
+                imgs.Add(LoadImage(pathes[i].Trim()));
+            }
+
+            return imgs;
+        }
+
+        /// <summary>
+        /// Load a image from given path
+        /// </summary>
+        /// <param name="filepath">the file path</param>
+        private Image LoadImage(string filepath) {
             Image img = null;
             string path = null;
             try {
@@ -162,7 +192,7 @@ namespace Net.SamuelChen.Tetris.Skin {
         #region Fields
         protected XmlDocument m_xmldoc;
         protected Dictionary<string, string> m_strings;
-        protected Dictionary<string, Image> m_images;
+        protected Dictionary<string, IList<Image>> m_images;
         private static Skins m_instance;
         #endregion
 

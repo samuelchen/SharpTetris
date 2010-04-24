@@ -30,6 +30,7 @@ namespace Net.SamuelChen.Tetris.Controller {
         object Target { get; }
         EnumControllerType Type { get; }
         ControllerKeyMap KeyMap { get; set; }
+        object Tag { get; set; }
 
         int Interval { get; set; }
 

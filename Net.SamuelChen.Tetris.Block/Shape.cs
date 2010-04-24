@@ -41,6 +41,11 @@ namespace Net.SamuelChen.Tetris.Blocks {
         public event ShapeMovingHandler Moved;
 
         /// <summary>
+        /// User data
+        /// </summary>
+        public object Tag { get; set; }
+
+        /// <summary>
         /// ctor()
         /// </summary>
         public Shape() {

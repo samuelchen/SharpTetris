@@ -50,7 +50,7 @@ namespace Net.SamuelChen.Tetris.Game {
             foreach (Player player in this.Players.Values) {
                 panel = player.PlayFiled;
                 if (null != panel) {
-                    panel.Show(i * panel.Width + 30, 40);
+                    panel.Show(i * (panel.Width + 20) + 20, 40);
                     //panel.InfoPanel.Show(10*(i+1) + panel.Width*i, 10);
                     //panel.Show(panel.InfoPanel.Left, panel.InfoPanel.Top + panel.InfoPanel.Height + 10);
                     i++;
@@ -60,7 +60,7 @@ namespace Net.SamuelChen.Tetris.Game {
             // adjust form size depends on last panel.
             if (null != panel) {
                 this.Container.Height = panel.Height + 100;
-                this.Container.Width = panel.Right + 20;
+                this.Container.Width = panel.Right + 30;
             }
         }
 
@@ -186,7 +186,7 @@ namespace Net.SamuelChen.Tetris.Game {
                     if (ActionMapping.TryGetValue(action, out act))
                         player.PlayFiled.Go(act);
 #if DEBUG
-                    player.PlayFiled.sDebug = e.sDebug;
+                    player.PlayFiled.DebugString = e.sDebug;
                     player.PlayFiled.RePaint();
 #endif
                 }
