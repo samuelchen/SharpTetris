@@ -1,35 +1,19 @@
-
-//=======================================================================
-// <copyright file="Game.cs" company="Samuel Chen Studio">
-//     Copyright (c) 2010 Samuel Chen Studio. All rights reserved.
-//     author   : Samuel Chen
-//     purpose  : To define a game.
-//     contact  : http://www.SamuelChen.net, samuel.net@gmail.com
-// </copyright>
-//=======================================================================
-
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Windows.Forms;
-using Net.SamuelChen.Tetris.Controller;
-using Net.SamuelChen.Tetris.Service;
 using Net.SamuelChen.Tetris.Skin;
 
 namespace Net.SamuelChen.Tetris.Game {
-    /// <summary>
-    /// Game playing class
-    /// </summary>>
-    public class LocalGame : TetrisGame {
+    class HostGame : TetrisGame {
 
-
-        public LocalGame()
+        public HostGame()
             : base() {
             PrivateInit();
         }
 
-        public LocalGame(EnumGameType type, Form container)
+        public HostGame(EnumGameType type, Form container)
             : base(type, container) {
-           
             PrivateInit();
         }
 
@@ -123,6 +107,5 @@ namespace Net.SamuelChen.Tetris.Game {
         protected System.Timers.Timer m_timer;
 
         #endregion
-
     }
 }

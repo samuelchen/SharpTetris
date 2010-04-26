@@ -42,6 +42,7 @@
     <Compile Include="GameBase.cs" />
     <Compile Include="Enum.cs" />
     <Compile Include="GameFactory.cs" />
+    <Compile Include="HostGame.cs" />
     <Compile Include="TetrisGame.cs" />
     <Compile Include="IGame.cs" />
     <Compile Include="LocalGame.cs" />

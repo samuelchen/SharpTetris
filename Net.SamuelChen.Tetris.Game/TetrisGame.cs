@@ -23,11 +23,8 @@ namespace Net.SamuelChen.Tetris.Game {
             Type = EnumGameType.Single;
         }
 
-        public TetrisGame(EnumGameType type) : this() {
+        public TetrisGame(EnumGameType type, Form container) : this() {
             Type = type;
-        }
-
-        public TetrisGame(Form container) : this() {
             this.Container = container;
         }
 

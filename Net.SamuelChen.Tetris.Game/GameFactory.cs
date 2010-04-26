@@ -30,7 +30,7 @@ namespace Net.SamuelChen.Tetris.Game {
             switch (type) {
                 case EnumGameType.Single:
                 case EnumGameType.Multiple:
-                    game = new LocalGame(type);
+                    game = new LocalGame(type, null); // assign the container later
                     break;
                 case EnumGameType.Host:
                 case EnumGameType.Client:
