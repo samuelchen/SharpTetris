@@ -41,8 +41,9 @@
     <Compile Include="Skins.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="skin.xml">
-    </EmbeddedResource>
+    <Content Include="skin.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -71,6 +71,12 @@
     <Compile Include="Enums.cs" />
     <Compile Include="Controls\IWizard.cs" />
     <Compile Include="Controls\IWizardPage.cs" />
+    <Compile Include="Test\NetworkTest.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Test\NetworkTest.Designer.cs">
+      <DependentUpon>NetworkTest.cs</DependentUpon>
+    </Compile>
     <Compile Include="NewGameForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -94,6 +100,12 @@
     </Compile>
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Test\PlayPanelTest.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Test\PlayPanelTest.Designer.cs">
+      <DependentUpon>PlayPanelTest.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -125,6 +137,10 @@
       <DependentUpon>WizPageSummary.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Test\NetworkTest.resx">
+      <DependentUpon>NetworkTest.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="NewGameForm.resx">
       <DependentUpon>NewGameForm.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -135,6 +151,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Test\PlayPanelTest.resx">
+      <DependentUpon>PlayPanelTest.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <Compile Include="Controls\WizPageMultiPlayer.cs">
