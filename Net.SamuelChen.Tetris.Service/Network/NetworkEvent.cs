@@ -16,18 +16,20 @@ namespace Net.SamuelChen.Tetris.Service {
     /// <summary>
     /// Delegate to validate the data
     /// </summary>
-    /// <param name="data">the data (utf8 string)</param>
+    /// <param name="data">the data</param>
     /// <returns></returns>
     public delegate bool NetworkDataValidationHandler(NetworkContent data);
 
-    public partial class NetworkEventArgs : EventArgs {
-        public RemoteInformation RemoteInformation;
-        public NetworkContent Content;
+    public class NetworkEventArgs : EventArgs {
+        public RemoteInformation RemoteInformation { get; set; }
+        public NetworkContent Content { get; set; }
+        public bool Cancelled { get; set; }
 
         public NetworkEventArgs(RemoteInformation ri, NetworkContent content)
             : base() {
             this.RemoteInformation = ri;
             this.Content = content;
+            this.Cancelled = false;
         }
     }
 }

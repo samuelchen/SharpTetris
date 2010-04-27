@@ -36,10 +36,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Network\Host.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Network\Server.cs" />
+    <Compile Include="Network\IServer.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Network\RemoteInformation.cs" />
-    <Compile Include="Network\Host.cs" />
     <Compile Include="Network\IClient.cs" />
-    <Compile Include="Network\IHost.cs" />
     <Compile Include="Network\Client.cs" />
     <Compile Include="Network\NetworkContent.cs" />
     <Compile Include="Network\NetworkEvent.cs" />

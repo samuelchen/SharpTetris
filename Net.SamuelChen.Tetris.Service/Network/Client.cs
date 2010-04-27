@@ -19,29 +19,28 @@ using System.IO;
 
 namespace Net.SamuelChen.Tetris.Service {
 
-    public class Client : IClient, IDisposable {
+    public class Client : Host, IClient, IDisposable {
 
         protected TcpClient m_client;
         protected BackgroundWorker m_worker;
 
-        public Client(int port) {
-            IPHostEntry host = Dns.GetHostEntry("localhost");
-            this.LocalEndPoint = new IPEndPoint(host.AddressList[0], port);
-            this.Encoding = Encoding.Unicode;
-            this.Name = Dns.GetHostName();
+        #region ctor
+
+        public Client() : base() { }
+        public Client(int port) : base(port) { }
+        public Client(int port, Encoding encoding) : base(port, encoding) { }
+
+        protected override void Init() {
+            base.Init();
         }
 
-        public Client(int port, Encoding encoding)
-            : this(port) {
-            this.Encoding = encoding;
-        }
+        #endregion
 
         #region Properties
 
-        public IPEndPoint LocalEndPoint { get; set; }
-        public Encoding Encoding { get; private set; }
-        public string Name { get; set; }
-        public RemoteInformation Host { get; set; }
+        public RemoteInformation RemoteHost { get; set; }
+
+        public bool IsConnected { get; protected set; }
 
         #endregion
 
@@ -52,9 +51,9 @@ namespace Net.SamuelChen.Tetris.Service {
         public event EventHandler Connected;
         public event EventHandler Disconnected;
 
-        public bool Connect(string hostNameOrIP, int port) {
+        public void Connect(string hostNameOrIP, int port) {
             if (null != m_worker || null != m_client)
-                return false;
+                return;
 
             m_worker = new BackgroundWorker();
             m_worker.DoWork += new DoWorkEventHandler(Client_DoWork);
@@ -66,7 +65,6 @@ namespace Net.SamuelChen.Tetris.Service {
             IPEndPoint hostEndPoint = new IPEndPoint(Dns.GetHostEntry(hostNameOrIP).AddressList[0], port);
             m_worker.RunWorkerAsync(hostEndPoint);
 
-            return true;
         }
 
         #region worker processes
@@ -77,6 +75,8 @@ namespace Net.SamuelChen.Tetris.Service {
                 Trace.TraceWarning("Catched error while disconnecting. \n{0}\n{1}",
                     e.Error.Message, e.Error.StackTrace);
             }
+
+            this.IsConnected = false;
 
             if (null != this.Disconnected)
                 this.Disconnected(this, new EventArgs());
@@ -89,6 +89,7 @@ namespace Net.SamuelChen.Tetris.Service {
                 if (null == m_client)
                     return;
 
+                this.IsConnected = true;
                 if (null != this.Connected)
                     this.Connected(this, new EventArgs());
 
@@ -115,43 +116,33 @@ namespace Net.SamuelChen.Tetris.Service {
                 return;
             }
 
-            byte[] buf = new byte[256];
-            int i = 0, j = 0, l = 0;
             TcpClient client = new TcpClient();
-
             try {
+                
                 client.Connect(hostEndPoint);
 
-                //trigger event Connected.
-                worker.ReportProgress(0, client);
+                if (client.Connected) {
 
-                NetworkStream ns = client.GetStream();
+                    //trigger event Connected.
+                    worker.ReportProgress(0, client);
 
-                while (true) {
+                    while (true) {
 
-                    if (worker.CancellationPending)
-                        break;
+                        if (worker.CancellationPending || !client.Connected)
+                            break;
 
-                    if (ns.CanRead) {
-                        using (MemoryStream ms = new MemoryStream()) {
-                            while (ns.DataAvailable && (i = ns.Read(buf, i, buf.Length)) != 0) {
-                                l = i - j;
-                                ms.Write(buf, 0, l);
-                                j = i;
-                            }
-                            ms.Flush();
-                            NetworkContent content = null;
-                            if (ms.Length > 0) {
-                                content = new NetworkContent(
-                                    EnumNetworkContentType.Bianary, ms.GetBuffer(), this.Encoding); // Setter of this.Encoding is private, no need lock
+                        byte[] data = Host.RecevieData(client);
+                        if (null != data) {
+                            NetworkContent content = new NetworkContent(
+                                EnumNetworkContentType.Bianary, data, this.Encoding);
 
-                                // trigger DataValidating and HostCalled.
-                                worker.ReportProgress(1, content);
-                            }
+                            // trigger DataValidating and HostCalled.
+                            worker.ReportProgress(1, content);
                         }
+
+                        System.Threading.Thread.Sleep(0);
                     }
 
-                    System.Threading.Thread.Sleep(0);
                 }
             } catch (SocketException err) {
 #if DEBUG
@@ -178,15 +169,7 @@ namespace Net.SamuelChen.Tetris.Service {
             if (null == m_client || null == content)
                 return false;
 
-            byte[] buf = content.GetBinary();
-
-            NetworkStream ns = m_client.GetStream();
-            if (null != ns && ns.CanWrite && buf != null) {
-                ns.Write(buf, 0, buf.Length);
-                ns.Flush();
-            }
-
-            return true;
+            return Host.SendData(m_client, content.GetBinary());
         }
 
         #endregion

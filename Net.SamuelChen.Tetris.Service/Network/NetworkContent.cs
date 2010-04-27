@@ -11,6 +11,8 @@
 using System;
 using System.Text;
 using System.Runtime.Serialization;
+using System.Net.Sockets;
+using System.IO;
 
 namespace Net.SamuelChen.Tetris.Service {
 
@@ -23,11 +25,15 @@ namespace Net.SamuelChen.Tetris.Service {
     public class NetworkContent : MarshalByRefObject, ISerializable {
 
         public NetworkContent(EnumNetworkContentType type, object data) {
-            this.Data = data;
             if (null == data)
                 this.Type = EnumNetworkContentType.Null;
             else
                 this.Type = type;
+
+            if (type == EnumNetworkContentType.Null)
+                this.Data = null;
+            else
+                this.Data = data;
 
             this.Encoding = Encoding.Unicode; //default encoding
         }

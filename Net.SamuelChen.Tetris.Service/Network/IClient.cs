@@ -3,7 +3,7 @@
 // <copyright file="IClient.cs" company="Samuel Chen Studio">
 //     Copyright (c) 2010 Samuel Chen Studio. All rights reserved.
 //     author   : Samuel Chen
-//     purpose  : Interface to join a remote game
+//     purpose  : Interface for client to join a remote game
 //     contact  : http://www.SamuelChen.net, samuel.net@gmail.com
 // </copyright>
 //=======================================================================
@@ -20,7 +20,7 @@ namespace Net.SamuelChen.Tetris.Service {
         event EventHandler Connected;
         event EventHandler Disconnected;
 
-        bool Connect(string hostNameOrIP, int port);
+        void Connect(string hostNameOrIP, int port);
         void Disconnect();
         bool CallHost(NetworkContent content);
     }
