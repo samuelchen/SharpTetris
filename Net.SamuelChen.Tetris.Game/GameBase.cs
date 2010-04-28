@@ -80,13 +80,31 @@ namespace Net.SamuelChen.Tetris.Game {
             Status = EnumGameStatus.Running;
         }
 
-        public virtual void Over() {
+        public virtual void Stop() {
             Status = EnumGameStatus.Over;
         }
 
         public virtual void Start() {
             Status = EnumGameStatus.Running;
         }
+
+        #region IDisposable
+
+        private bool _disposed = false;
+        public virtual void Dispose() {
+            if (_disposed)
+                return;
+
+            this.Stop();
+            foreach (Player player in this.Players.Values)
+                player.Dispose();
+            this.Players.Clear();
+            this.Players = null;
+
+            _disposed = true;
+        }
+
+        #endregion
 
         #endregion
     }

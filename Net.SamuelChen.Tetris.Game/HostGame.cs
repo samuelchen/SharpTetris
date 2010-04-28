@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 using Net.SamuelChen.Tetris.Skin;
+using Net.SamuelChen.Tetris.Service;
+using Net.SamuelChen.Tetris.Controller;
 
 namespace Net.SamuelChen.Tetris.Game {
     class HostGame : TetrisGame {
@@ -18,13 +20,47 @@ namespace Net.SamuelChen.Tetris.Game {
         }
 
         #region Properties
+
+        public int ServicePort { get; set; }
+        //public int ClientPort { get; set; }
         #endregion
 
         private void PrivateInit() {
             m_timer = new System.Timers.Timer();
             m_timer.Elapsed += this.OnTimer_Elapsed;
+            this.ServicePort = 9527;
+
+            m_server = new Server(this.ServicePort);
+            m_server.MaxConnections = this.MaxPlayers;
+            m_server.ClientConnecting += new EventHandler<NetworkEventArgs>(Server_ClientConnecting);
+            m_server.ClientConnected += new EventHandler<NetworkEventArgs>(Server_ClientConnected);
+            m_server.ClientCalled += new EventHandler<NetworkEventArgs>(m_server_ClientCalled);
+            m_client = new Client();
         }
 
+        void Server_ClientConnecting(object sender, NetworkEventArgs e) {
+            if (this.Status != EnumGameStatus.Initialized)
+                e.Cancelled = true;
+        }
+
+        void Server_ClientConnected(object sender, NetworkEventArgs e) {
+            RemoteInformation ri = e.RemoteInformation;
+            if (null == ri)
+                return;
+
+            Player player = new Player(ri.Name);
+            player.Controller = ControllerFactory.Instance.GetFreeController();
+            if (null == player.Controller)
+                player.Controller = ControllerFactory.Instance.CreateController();
+        }
+
+        void m_server_ClientCalled(object sender, NetworkEventArgs e) {
+            throw new NotImplementedException();
+        }
+
+        public void WaitForClients() {
+            
+        }
 
         #region Game process
 
@@ -34,6 +70,7 @@ namespace Net.SamuelChen.Tetris.Game {
         public override void New() {
             base.New();
             m_timer.Interval = 3000;
+            m_server.Start();
         }
 
 
@@ -51,8 +88,8 @@ namespace Net.SamuelChen.Tetris.Game {
         /// <summary>
         /// Game over
         /// </summary>
-        public override void Over() {
-            base.Over();
+        public override void Stop() {
+            base.Stop();
             m_timer.Stop();
         }
 
@@ -105,6 +142,8 @@ namespace Net.SamuelChen.Tetris.Game {
         #region Fields
 
         protected System.Timers.Timer m_timer;
+        protected Server m_server;
+        protected Client m_client;
 
         #endregion
     }

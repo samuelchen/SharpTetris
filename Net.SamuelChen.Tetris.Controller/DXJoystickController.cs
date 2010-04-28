@@ -86,7 +86,6 @@ namespace Net.SamuelChen.Tetris.Controller {
         public override void Attach(Control target) {
             if (null == this.Device)
                 return;
-            this.Target = target;
             Device dev = this.Device;
             try {
                 // Acquire the device

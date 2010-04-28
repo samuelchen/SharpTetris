@@ -67,8 +67,8 @@ namespace Net.SamuelChen.Tetris.Game {
         /// <summary>
         /// Game over
         /// </summary>
-        public override void Over() {
-            base.Over();
+        public override void Stop() {
+            base.Stop();
             m_timer.Stop();
         }
 

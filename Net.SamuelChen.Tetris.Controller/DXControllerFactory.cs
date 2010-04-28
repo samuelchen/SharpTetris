@@ -20,15 +20,51 @@ namespace Net.SamuelChen.Tetris.Controller {
         // GUID, IController value pairs.
         protected Dictionary<Guid, IController> m_joysticks;
         protected Dictionary<Guid, IController> m_keyboards;
+        protected IDictionary<Guid, IController> m_controllers;
 
         public DxControllerFactory()
             : base() {
             m_joysticks = new Dictionary<Guid, IController>();
             m_keyboards = new Dictionary<Guid, IController>();
+            m_controllers = new Dictionary<Guid, IController>();
         }
 
-        // Enum all joystick controllers.
-        public override List<IController> EnumJoysticks() {
+        /// <summary>
+        /// Enum all controllers
+        /// </summary>
+        /// <returns></returns>
+        public override IEnumerable<IController> EnumControlls() {
+            //List<IController> joysticks = this.EnumControlls();
+            //List<IController> keyboards = this.EnumControlls();
+            //List<IController> all = new List<IController>();
+            //all.AddRange(joysticks);
+            //all.AddRange(keyboards);
+            //return all;
+
+            m_controllers.Clear();
+            try {
+                foreach (DeviceInstance di in Manager.GetDevices(DeviceClass.All, EnumDevicesFlags.AttachedOnly)) {
+                    IController c = null;
+                    if (di.DeviceType == DeviceType.Gamepad || di.DeviceType == DeviceType.Joystick)
+                        c = new DXJoystickController(di.InstanceGuid);
+                    else if (di.DeviceType == DeviceType.Keyboard)
+                        c = new DXKeyboardController(di.InstanceGuid);
+                    else
+                        continue;
+
+                    m_controllers.Add(di.InstanceGuid, c);
+                }
+            } catch (Exception err) {
+                System.Diagnostics.Trace.TraceWarning(err.Message);
+            }
+            return m_controllers.Values;
+        }
+        
+        /// <summary>
+        /// Enum all joystick controllers.
+        /// </summary>
+        /// <returns></returns>
+        public List<IController> EnumJoysticks() {
             List<IController> controllers = new List<IController>();
             m_joysticks.Clear();
             try {
@@ -43,8 +79,11 @@ namespace Net.SamuelChen.Tetris.Controller {
             return controllers;
         }
 
-        // Enum all keyboard controllers.
-        public override List<IController> EnumKeyboards() {
+        /// <summary>
+        /// Enum all keyboard controllers.
+        /// </summary>
+        /// <returns></returns>
+        public List<IController> EnumKeyboards() {
             List<IController> controllers = new List<IController>();
             m_keyboards.Clear();
             try {
@@ -63,8 +102,17 @@ namespace Net.SamuelChen.Tetris.Controller {
             if (string.IsNullOrEmpty(controllerId))
                 return null;
 
+            try {
+                Guid id = new Guid(controllerId);
+                return GetController(id);
+            }catch {
+                return null;
+            }
+        }
+
+        public override IController GetController(Guid controllerId) {
             IController c = null;
-            Guid id = new Guid(controllerId);
+            Guid id = controllerId;
             if (m_joysticks.Count == 0)
                 EnumJoysticks();
             if (!m_joysticks.TryGetValue(id, out c)) {
@@ -74,5 +122,25 @@ namespace Net.SamuelChen.Tetris.Controller {
             }
             return c;
         }
+
+        public override IController CreateController() {
+            return null;
+        }
+
+        #region IDisposable Members
+
+        private bool _disposed = false;
+        public override void Dispose() {
+            if (_disposed)
+                return;
+
+            foreach (IController c in m_controllers.Values)
+                c.Dispose();
+            m_controllers.Clear();
+
+            _disposed = true;
+        }
+
+        #endregion
     }
 }

@@ -106,6 +106,7 @@ namespace Net.SamuelChen.Tetris.Controller {
         /// </summary>
         /// <param name="target">The target play panel which the controller is attaching to.</param>
         public virtual void Attach(Control target) {
+            this.Target = target;
             this.Attached = true;
         }
         public void Attach(object target) {
@@ -122,34 +123,18 @@ namespace Net.SamuelChen.Tetris.Controller {
         /// <summary>
         /// Start to use this controller.
         /// </summary>
-        public void Start() {
-            Thread t = new Thread(new ParameterizedThreadStart(Controller.ControllerProc));
-            t.Name = this.Name;
+        public virtual void Start() {
             this.Working = true;
-            m_thread = t;
-            t.Start(this);
         }
 
         /// <summary>
         /// Stop using this controller.
         /// </summary>
-        public void Stop() {
-            lock (this) {
-                this.Working = false;
-            }
+        public virtual void Stop() {
+            this.Working = false;
         }
 
-        /// <summary>
-        /// Force to stop using this controller.
-        /// Only be invoked if Stop() does not work.
-        /// </summary>
-        public void Teminate() {
-            if (null != m_thread) {
-                m_thread.Suspend();
-            }
-        }
-
-        public ControllerKey[] Translate(string action) {
+        public virtual ControllerKey[] Translate(string action) {
             if (null == this.KeyMap)
                 return null;
             ControllerKey[] keys = null;
@@ -159,7 +144,7 @@ namespace Net.SamuelChen.Tetris.Controller {
 
         }
 
-        public string Translate(ControllerKey key) {
+        public virtual string Translate(ControllerKey key) {
             if (null == this.KeyMap)
                 return null;
 
@@ -182,56 +167,22 @@ namespace Net.SamuelChen.Tetris.Controller {
 
         #endregion
 
-        #region Threading
-
-        private Thread m_thread = null;                 // the thread instance
-
-        /// <summary>
-        /// The controller working thread process
-        /// </summary>
-        /// <param name="controller">Which controller the thread is working for.</param>
-        public static void ControllerProc(object controller) {
-            bool working = false;
-            bool attached = false;
-            int interval = 0;
-            bool fired = false;
-            // get the thread working state
-            DXController ctrlr = controller as DXController;
-
-            if (null == ctrlr) {
-                Thread.CurrentThread.Abort();
-                return;
-            }
-
-            lock (ctrlr) {
-                // check the flag
-                working = ctrlr.Working;
-                attached = ctrlr.Attached;
-                interval = ctrlr.Interval;
-            }
-            // capture the device
-            while (working && attached) {
-                Thread.Sleep(fired ? interval : 0);
-
-                lock (ctrlr) {
-                    fired = ctrlr.Poll();
-
-                    // check the flag
-                    working = ctrlr.Working;
-                    attached = ctrlr.Attached;
-                }
-            }
-            Thread.CurrentThread.Abort();
-        }
-
-        #endregion
-
 
         #region IDisposable Members
 
-        public void Dispose() {
-            if (null != m_thread)
-                m_thread.Abort();
+        private bool _disposed = false;
+        public virtual void Dispose() {
+            if (_disposed)
+                return;
+
+            this.Deattach();
+            this.Stop();
+            this.Target = null;
+            this.Tag = null;
+            this.KeyMap.Clear();
+            this.KeyMap = null;
+
+            _disposed = true;
         }
 
         #endregion

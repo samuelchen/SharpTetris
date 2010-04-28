@@ -4,13 +4,15 @@ using System.Text;
 
 namespace Net.SamuelChen.Tetris.Controller {
     public enum EnumControllerType {
+        Virtual = 0,
         Keyboard,
         Joystick,
     }
 
 
     public enum EnumControllerFactoryType {
-        DirectX,
+        Virtual = 0,
+        DirectX = 1,
     }
 
 }

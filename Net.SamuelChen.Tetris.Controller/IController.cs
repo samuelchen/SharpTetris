@@ -21,7 +21,7 @@ namespace Net.SamuelChen.Tetris.Controller {
     /// <summary>
     /// The interface for controller.
     /// </summary>
-    public interface IController {
+    public interface IController : IDisposable {
         event ControllerPressHandler Pressed;
 
         int ButtonCount { get; }
@@ -41,7 +41,6 @@ namespace Net.SamuelChen.Tetris.Controller {
         void Deattach();
         void Start();
         void Stop();
-        void Teminate();
         ControllerKey[] Translate(string action);
         string Translate(ControllerKey key);
     }

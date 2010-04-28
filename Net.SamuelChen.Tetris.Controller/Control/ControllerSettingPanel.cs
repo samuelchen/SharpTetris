@@ -29,21 +29,13 @@ namespace Net.SamuelChen.Tetris.Controller {
 
         public void Init() {
             ControllerFactory factory = ControllerFactory.Instance;
-            List<IController> keyboards = factory.EnumKeyboards();
-            List<IController> joysticks = factory.EnumJoysticks();
+            IEnumerable<IController> controllers = factory.EnumControlls();
             int idx = -1;
 
             Controllers = new Dictionary<int, IController>();
             comboxDevices.Items.Clear();
 
-            foreach (IController c in keyboards) {
-                if (null != c) {
-                    idx = comboxDevices.Items.Add(string.Format("{0}, {1}", c.Name, c.ID));
-                    this.Controllers.Add(idx, c);
-                }
-            }
-
-            foreach (IController c in joysticks) {
+            foreach (IController c in controllers) {
                 if (null != c) {
                     idx = comboxDevices.Items.Add(string.Format("{0}, {1}", c.Name, c.ID));
                     this.Controllers.Add(idx, c);

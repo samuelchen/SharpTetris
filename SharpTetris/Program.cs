@@ -34,10 +34,10 @@ namespace Net.SamuelChen.Tetris {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 #endif
 
-            //Setting.Instance.Load("setting.xml");
-            //Skins.Instance.Load(Setting.Instance.Skin);
-            //ControllerFactory.CreateInstance(EnumControllerFactoryType.DirectX);
-            //Trace.TraceInformation("#Tetris started.");
+            Setting.Instance.Load("setting.xml");
+            Skins.Instance.Load(Setting.Instance.Skin);
+            ControllerFactory.CreateInstance(EnumControllerFactoryType.DirectX);
+            Trace.TraceInformation("#Tetris started.");
             GameBase.ActionMapping = new Dictionary<string, object>(){
                 {"LEFT", EnumMoving.Left}, 
                 {"RIGHT", EnumMoving.Right}, 
@@ -46,9 +46,9 @@ namespace Net.SamuelChen.Tetris {
                 {"DIRECT", EnumMoving.DirectDown},
                 {"PAUSE", EnumMoving.Pause}
             };
-            
-            //Application.Run(new MainForm());
-            Application.Run(new NetworkTest());
+
+            Application.Run(new MainForm());
+            //Application.Run(new NetworkTest());
         }
 
         static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e) {

@@ -15,11 +15,12 @@ using Net.SamuelChen.Tetris.Controller;
 using System.Windows.Forms;
 
 namespace Net.SamuelChen.Tetris.Game {
-    public abstract class TetrisGame : GameBase, IDisposable {
+    public abstract class TetrisGame : GameBase {
 
         public TetrisGame()
             : base() {
-            Level = 0;
+            this.Level = 0;
+            this.MaxPlayers = 4;
             Type = EnumGameType.Single;
         }
 
@@ -39,6 +40,8 @@ namespace Net.SamuelChen.Tetris.Game {
         /// Game type
         /// </summary>
         public EnumGameType Type { get; protected set; }
+
+        public int MaxPlayers { get; set; }
 
 
         public virtual void Refresh() {
@@ -119,8 +122,8 @@ namespace Net.SamuelChen.Tetris.Game {
             }
         }
 
-        public override void Over() {
-            base.Over();
+        public override void Stop() {
+            base.Stop();
 
             foreach (Player player in this.Players.Values) {
                 PlayPanel panel = player.PlayFiled;
@@ -194,25 +197,15 @@ namespace Net.SamuelChen.Tetris.Game {
 
         #region IDisposable Members
 
-        public virtual void Dispose() {
-            this.Over();
+        private bool _disposed = false;
+        public override void Dispose() {
+            if (_disposed)
+                return;
 
-            foreach (Player player in this.Players.Values) {
-                PlayPanel panel = player.PlayFiled;
-                IController ctrlr = player.Controller;
-                if (null != ctrlr) {
-                    try {
-                        if (ctrlr.Attached)
-                            ctrlr.Deattach();
-                        ctrlr.Stop();
-                    } catch {
-                        ctrlr.Teminate();
-                    }
-                }
-                if (null != panel) {
-                    panel.Dispose();
-                }
-            }
+            this.Stop();
+            this.Container = null;
+            base.Dispose();
+            _disposed = true;
         }
 
         #endregion

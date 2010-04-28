@@ -16,7 +16,7 @@ namespace Net.SamuelChen.Tetris.Game
 	/// <summary>
 	/// Player reprensents a game player.
 	/// </summary>
-	public class Player
+	public class Player : IDisposable
 	{
 		public Player() {
 			this.Name = "Player";
@@ -69,26 +69,40 @@ namespace Net.SamuelChen.Tetris.Game
 			return true;
 		}
 
-        public void Start() {
-            Player player = this;
-            player.PlayFiled.Status = EnumGameStatus.Running;
-            player.Controller.Attach(player.PlayFiled);
-            if (player.Controller.Attached) {
-                player.Controller.Pressed += new ControllerPressHandler(Controller_Pressed);
-                player.Controller.Start();
+        //public void Start() {
+        //    Player player = this;
+        //    player.PlayFiled.Status = EnumGameStatus.Running;
+        //    player.Controller.Attach(player.PlayFiled);
+        //    if (player.Controller.Attached) {
+        //        player.Controller.Pressed += new ControllerPressHandler(Controller_Pressed);
+        //        player.Controller.Start();
+        //    }
+        //}
+
+        //public void Stop() {
+        //    if (null != this.Controller)
+        //        this.Controller.Stop();
+        //}
+
+
+        #region IDisposable Members
+
+        private bool _disposed = false;
+        public void Dispose() {
+            if (_disposed)
+                return;
+
+            if (null != this.PlayFiled)
+                this.PlayFiled.Dispose();
+            if (null != this.Controller) {
+                this.Controller.Stop();
+                // don't dispose controller here.
             }
+            this.IP = null;
+
+            _disposed = true;
         }
 
-        void Controller_Pressed(object sender, ControllerPressedEventArgs e) {
-            throw new NotImplementedException();
-        }
-
-        public void Stop() {
-            this.Controller.Stop();
-        }
-
-        public void Pause() {
-            
-        }
-	}
+        #endregion
+    }
 }

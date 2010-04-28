@@ -13,7 +13,7 @@ using System.Text;
 
 namespace Net.SamuelChen.Tetris.Controller {
 
-    public abstract class ControllerFactory {
+    public abstract class ControllerFactory :  IDisposable {
 
         private static ControllerFactory m_instance;
 
@@ -23,7 +23,7 @@ namespace Net.SamuelChen.Tetris.Controller {
         public static ControllerFactory Instance {
             get {
                 if (null == m_instance)
-                    CreateInstance(EnumControllerFactoryType.DirectX);
+                    CreateInstance(EnumControllerFactoryType.Virtual);
                 return m_instance;
             }
             protected set {
@@ -38,6 +38,9 @@ namespace Net.SamuelChen.Tetris.Controller {
         /// <returns>A implemented controller factory</returns>
         public static ControllerFactory CreateInstance(EnumControllerFactoryType type) {
             switch (type) {
+                case EnumControllerFactoryType.Virtual:
+                    m_instance = new VirtualControllerFactory();
+                    break;
                 case EnumControllerFactoryType.DirectX:
                     m_instance = new DxControllerFactory();
                     break;
@@ -46,14 +49,45 @@ namespace Net.SamuelChen.Tetris.Controller {
             }
             return null;
         }
-        
-        // Enum all keyboard controllers.
-        public abstract List<IController> EnumKeyboards();
 
-        // Enum all joystick controllers.
-        public abstract List<IController> EnumJoysticks();
+        /// <summary>
+        /// Enum all controllers
+        /// </summary>
+        /// <returns></returns>
+        public abstract IEnumerable<IController> EnumControlls();
         
-        // Get a controller.
+        //// Enum all keyboard controllers.
+        //public abstract List<IController> EnumKeyboards();
+
+        //// Enum all joystick controllers.
+        //public abstract List<IController> EnumJoysticks();
+        
+        /// <summary>
+        /// Get a controller by GUID string
+        /// </summary>
+        /// <param name="controllerId"></param>
+        /// <returns></returns>
         public abstract IController GetController(string controllerId);
+
+        /// <summary>
+        /// get a controller by GUID
+        /// </summary>
+        /// <param name="controllerId"></param>
+        /// <returns></returns>
+        public abstract IController GetController(Guid controllerId);
+
+        /// <summary>
+        /// Create a virtual controller. Only availible for VirtualControllerFactory (Type is EnumControllerFactoryType.Virtual)
+        /// Returns null if other type of factories.
+        /// </summary>
+        /// <returns></returns>
+        public abstract IController CreateController();
+
+
+        #region IDisposable Members
+
+        public abstract void Dispose();
+
+        #endregion
     }
 }

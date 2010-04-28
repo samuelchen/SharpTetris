@@ -60,12 +60,106 @@ namespace Net.SamuelChen.Tetris.Controller {
             base.Deattach();
         }
 
+        /// <summary>
+        /// Start to use this controller.
+        /// </summary>
+        public override void Start() {
+            Thread t = new Thread(new ParameterizedThreadStart(DXController.ControllerProc));
+            t.Name = this.Name;
+            this.Working = true;
+            m_thread = t;
+            t.Start(this);
+        }
+
+        /// <summary>
+        /// Stop using this controller.
+        /// </summary>
+        public override void Stop() {
+            base.Stop();
+            if (null != m_thread)
+                m_thread.Abort();
+            m_thread = null;
+
+        }
+
         #endregion
+
+        /// <summary>
+        /// Force to stop using this controller.
+        /// Only be invoked if Stop() does not work.
+        /// </summary>
+        public virtual void Teminate() {
+            if (null != m_thread) {
+                m_thread.Suspend();
+                m_thread = null;
+            }
+        }
 
         /// <summary>
         /// Get the state of current device.
         /// </summary>
         public abstract bool Poll();
+
+        #region IDispose
+        private bool _disposed = false;
+        public override void Dispose() {
+            if (_disposed)
+                return;
+
+            this.Deattach();
+            this.Stop();
+            this.Teminate();
+            this.Device.Dispose();
+            this.Device = null;
+
+            base.Dispose();
+            _disposed = true;
+        }
+        #endregion
+
+        #region Threading
+
+        private Thread m_thread = null;                 // the thread instance
+
+        /// <summary>
+        /// The controller working thread process
+        /// </summary>
+        /// <param name="controller">Which controller the thread is working for.</param>
+        public static void ControllerProc(object controller) {
+            bool working = false;
+            bool attached = false;
+            int interval = 0;
+            bool fired = false;
+            // get the thread working state
+            DXController ctrlr = controller as DXController;
+
+            if (null == ctrlr) {
+                Thread.CurrentThread.Abort();
+                return;
+            }
+
+            lock (ctrlr) {
+                // check the flag
+                working = ctrlr.Working;
+                attached = ctrlr.Attached;
+                interval = ctrlr.Interval;
+            }
+            // capture the device
+            while (working && attached) {
+                Thread.Sleep(fired ? interval : 0);
+
+                lock (ctrlr) {
+                    fired = ctrlr.Poll();
+
+                    // check the flag
+                    working = ctrlr.Working;
+                    attached = ctrlr.Attached;
+                }
+            }
+            Thread.CurrentThread.Abort();
+        }
+
+        #endregion
 
     }
 }

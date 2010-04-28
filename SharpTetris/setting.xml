@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <setting>
   <general>
-    <skin>web20</skin>
+    <skin>default</skin>
     <log>log.txt</log>
     <port>9527</port>
     <default_player>Samuel</default_player>
