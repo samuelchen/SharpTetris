@@ -18,7 +18,6 @@ using System.Windows.Forms;
 using System.Net;
 using Net.SamuelChen.Tetris.Skin;
 using Net.SamuelChen.Tetris.Game;
-using Net.SamuelChen.Tetris.Service;
 
 namespace Net.SamuelChen.Tetris {
     public partial class WizPageHost : UserControl, IWizardPage {
@@ -50,7 +49,7 @@ namespace Net.SamuelChen.Tetris {
         }
 
         protected Skins m_skin = Skins.Instance;
-        protected Setting m_setting = Setting.Instance;
+        protected GameSetting m_setting = GameSetting.Instance;
         protected string m_ip = string.Empty;
         protected string m_port = string.Empty;
 

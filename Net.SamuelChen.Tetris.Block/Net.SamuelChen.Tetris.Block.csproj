@@ -43,12 +43,6 @@
     <Compile Include="Block.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Net.SamuelChen.Tetris.Service\Net.SamuelChen.Tetris.Service.csproj">
-      <Project>{3BBFC5E7-E5FB-4998-A429-CC32EDBAEC94}</Project>
-      <Name>Net.SamuelChen.Tetris.Service</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

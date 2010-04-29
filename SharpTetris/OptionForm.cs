@@ -17,10 +17,8 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using Net.SamuelChen.Tetris.Controller;
-using Microsoft.DirectX.DirectInput;
 using System.Diagnostics;
 using System.Threading;
-using Net.SamuelChen.Tetris.Service;
 using Net.SamuelChen.Tetris.Skin;
 using Net.SamuelChen.Tetris.Game;
 
@@ -28,7 +26,7 @@ namespace Net.SamuelChen.Tetris {
     public partial class OptionForm : Form {
         #region Fields
 
-        protected Setting m_setting = Setting.Instance;
+        protected GameSetting m_setting = GameSetting.Instance;
         protected Skins m_skin = Skins.Instance;
         private int m_autoIdPlayer = 1;
         private int m_autoIdController = 1;

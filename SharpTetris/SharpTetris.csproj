@@ -71,6 +71,7 @@
     <Compile Include="Enums.cs" />
     <Compile Include="Controls\IWizard.cs" />
     <Compile Include="Controls\IWizardPage.cs" />
+    <Compile Include="GameSetting.cs" />
     <Compile Include="Test\NetworkTest.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -194,6 +195,10 @@
     <ProjectReference Include="..\Net.SamuelChen.Tetris.Game\Net.SamuelChen.Tetris.Game.csproj">
       <Project>{2A99D936-8564-4E10-907E-BDE72F9F9CB8}</Project>
       <Name>Net.SamuelChen.Tetris.Game</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Net.SamuelChen.Tetris.Network\Net.SamuelChen.Tetris.Network.csproj">
+      <Project>{EEA077F7-D2A0-4FD9-A4B8-173DF43928E9}</Project>
+      <Name>Net.SamuelChen.Tetris.Network</Name>
     </ProjectReference>
     <ProjectReference Include="..\Net.SamuelChen.Tetris.Service\Net.SamuelChen.Tetris.Service.csproj">
       <Project>{3BBFC5E7-E5FB-4998-A429-CC32EDBAEC94}</Project>

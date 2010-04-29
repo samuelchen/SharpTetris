@@ -65,13 +65,9 @@
     <Compile Include="IController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VirtualController.cs" />
-    <Compile Include="VirtualControllerFactory.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Net.SamuelChen.Tetris.Service\Net.SamuelChen.Tetris.Service.csproj">
-      <Project>{3BBFC5E7-E5FB-4998-A429-CC32EDBAEC94}</Project>
-      <Name>Net.SamuelChen.Tetris.Service</Name>
-    </ProjectReference>
+    <Compile Include="VirtualControllerFactory.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Control\ControllerSettingInputDialog.resx">

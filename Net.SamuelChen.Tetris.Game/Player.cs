@@ -18,8 +18,10 @@ namespace Net.SamuelChen.Tetris.Game
 	/// </summary>
 	public class Player : IDisposable
 	{
+        private static int m_autoId = 1;
+
 		public Player() {
-			this.Name = "Player";
+			this.Name = Player.CreateName();
 		}
 		
 		public Player(string sName) {
@@ -46,49 +48,14 @@ namespace Net.SamuelChen.Tetris.Game
         /// </summary>
         public PlayPanel PlayFiled { get; set; }
 
-        /// <summary>
-        /// IP address
-        /// </summary>
-        public System.Net.IPEndPoint IP { get; set; }
-
-        /// <summary>
-        /// Is playing local game?
-        /// </summary>
-        public bool IsLocal {
-            get {
-                return true;
-            }
+        public static string CreateName() {
+            return string.Format("Player{0}", m_autoId++);
         }
-
-		/// <summary>
-		/// Whether is playing a local game with another player
-		/// </summary>
-		/// <param name="theOtherPlayer">another player</param>
-		/// <returns>ture= yes, false=no</returns>
-		public bool IsLocalTo(Player theOtherPlayer) {
-			return true;
-		}
-
-        //public void Start() {
-        //    Player player = this;
-        //    player.PlayFiled.Status = EnumGameStatus.Running;
-        //    player.Controller.Attach(player.PlayFiled);
-        //    if (player.Controller.Attached) {
-        //        player.Controller.Pressed += new ControllerPressHandler(Controller_Pressed);
-        //        player.Controller.Start();
-        //    }
-        //}
-
-        //public void Stop() {
-        //    if (null != this.Controller)
-        //        this.Controller.Stop();
-        //}
-
 
         #region IDisposable Members
 
         private bool _disposed = false;
-        public void Dispose() {
+        public virtual void Dispose() {
             if (_disposed)
                 return;
 
@@ -98,7 +65,6 @@ namespace Net.SamuelChen.Tetris.Game
                 this.Controller.Stop();
                 // don't dispose controller here.
             }
-            this.IP = null;
 
             _disposed = true;
         }

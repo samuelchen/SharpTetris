@@ -14,7 +14,6 @@ using System.Drawing.Imaging;
 using System.Threading;
 
 using Net.SamuelChen.Tetris.Blocks;
-using Net.SamuelChen.Tetris.Service;
 using Net.SamuelChen.Tetris.Controller;
 using Net.SamuelChen.Tetris.Skin;
 using System.Collections.Generic;
@@ -134,8 +133,8 @@ namespace Net.SamuelChen.Tetris.Game {
             MoveCurShape(EnumMoving.Down);
         }
 
-        public void Go(object act) {
-            EnumMoving move = (EnumMoving)act;
+        public void Go(object enumMoving) {
+            EnumMoving move = (EnumMoving)enumMoving;
             if (move == EnumMoving.Pause) {
                 if (this.Status == EnumGameStatus.Paused)
                     this.Status = EnumGameStatus.Running;
@@ -509,13 +508,14 @@ namespace Net.SamuelChen.Tetris.Game {
         protected void DrawBlock(Graphics graph, Block block, int imageIndex) {
             Image blockImage;
             string sResName;
-            //if (block.Type == EnumBlockType.Blank)
+            //if (block.GameType == EnumBlockType.Blank)
             //    return;
 
             sResName = block.Type.ToString().ToLower();
 
 #if DEBUG
-            if (Setting.Instance.Skin.Equals("web20", StringComparison.CurrentCultureIgnoreCase))
+            // TODO: remove me
+            if (m_skin.SkinPath.Contains("web20"))
                 imageIndex = 1;
 #endif
             blockImage = m_skin.GetImage(sResName, imageIndex);
@@ -595,7 +595,6 @@ namespace Net.SamuelChen.Tetris.Game {
 
         protected Random m_rnd;
         protected Skins m_skin = Skins.Instance;
-
 #if DEBUG
         public string DebugString = string.Empty;
 #endif

@@ -25,10 +25,11 @@ namespace Net.SamuelChen.Tetris.Controller {
 
         public ControllerSettingPanel() {
             InitializeComponent();
+            this.FactoryType = EnumControllerFactoryType.DirectX;
         }
 
         public void Init() {
-            ControllerFactory factory = ControllerFactory.Instance;
+            ControllerFactory factory = ControllerFactory.CreateInstance(this.FactoryType);
             IEnumerable<IController> controllers = factory.EnumControlls();
             int idx = -1;
 
@@ -84,6 +85,8 @@ namespace Net.SamuelChen.Tetris.Controller {
             get { return this.Name; }
             set { this.Name = value; }
         }
+
+        public EnumControllerFactoryType FactoryType { get; set; }
 
         public ControllerKeyMap GetKeyMap() {
             ControllerKeyMap map = new ControllerKeyMap();

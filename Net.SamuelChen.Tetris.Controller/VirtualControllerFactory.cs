@@ -15,16 +15,24 @@ using System.Text;
 namespace Net.SamuelChen.Tetris.Controller {
     internal class VirtualControllerFactory : ControllerFactory {
 
-        protected IDictionary<Guid, IController> m_controllers;
-        private static int m_autoId = 0;
+        protected IDictionary<Guid, WeakReference> m_controllers;
 
         public VirtualControllerFactory()
             : base() {
-            m_controllers = new Dictionary<Guid, IController>();
+            m_controllers = new Dictionary<Guid, WeakReference>();
         }
 
         public override IEnumerable<IController> EnumControlls() {
-            return m_controllers.Values;
+            List<IController> controllers = new List<IController>();
+            foreach (KeyValuePair<Guid, WeakReference> item in m_controllers) {
+                WeakReference r = item.Value;
+                if (null == r || null == r.Target || !r.IsAlive)
+                    m_controllers.Remove(item.Key);
+                else
+                    controllers.Add(r.Target as IController);
+            }
+
+            return controllers;
         }
 
         public override IController GetController(string controllerId) {
@@ -33,7 +41,7 @@ namespace Net.SamuelChen.Tetris.Controller {
 
             try {
                 Guid id = new Guid(controllerId);
-                return GetController(id);
+                return this.GetController(id);
             } catch {
                 return null;
             }
@@ -41,21 +49,31 @@ namespace Net.SamuelChen.Tetris.Controller {
 
         public override IController GetController(Guid controllerId) {
             IController c = null;
+            WeakReference r = null;
             Guid id = controllerId;
-            m_controllers.TryGetValue(id, out c);
+            if (m_controllers.TryGetValue(id, out r))
+                if (null != r && null != r.Target && r.IsAlive)
+                    c = r.Target as IController;
             return c;
         }
 
         public override IController CreateController() {
             IController c = new VirtualController();
             //TODO: m_controller will keep increasing. Try use weak reference.
-            // WeakReference r = new WeakReference(c);
-            m_controllers.Add(c.ID, c);
+            WeakReference r = new WeakReference(c);
+            m_controllers.Add(c.ID, r);
             return c;
         }
 
-        public static string CreateName() {
-            return string.Format("Virtual Controller {0}", m_autoId++);
+        public void RemoveController(Guid guid) {
+            if (null == guid)
+                return;
+            WeakReference r = null;
+            if (m_controllers.TryGetValue(guid, out r)) {
+                if (null != r && null != r.Target && r.IsAlive)
+                    (r.Target as IController).Dispose();
+            }
+            m_controllers.Remove(guid);
         }
 
         #region IDisposable Members

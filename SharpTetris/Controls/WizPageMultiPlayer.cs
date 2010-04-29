@@ -17,7 +17,7 @@ using System.Text;
 using System.Windows.Forms;
 using Net.SamuelChen.Tetris.Skin;
 using Net.SamuelChen.Tetris.Game;
-using Net.SamuelChen.Tetris.Service;
+
 using Net.SamuelChen.Tetris.Controller;
 using System.Text.RegularExpressions;
 
@@ -25,7 +25,7 @@ namespace Net.SamuelChen.Tetris {
     public partial class WizPageMultiPlayer : UserControl, IWizardPage {
 
         protected Skins m_skin;
-        protected Setting m_setting;
+        protected GameSetting m_setting;
 
         private List<string> m_controllerIds;
 
@@ -38,7 +38,7 @@ namespace Net.SamuelChen.Tetris {
                     if (string.IsNullOrEmpty(player.Name))
                         continue;
                     string controllerId = dgvPlayers.Rows[i].Cells[1].Value as string;
-                    player.Controller = ControllerFactory.Instance.GetController(controllerId);
+                    player.Controller = m_setting.ControllerFactory.GetController(controllerId);
                     if (null == player.Controller)
                         continue;
                     player.Controller.KeyMap  = ControllerKeyMap.FromStringDictionary(m_setting.GetKeymap(controllerId));
@@ -51,7 +51,7 @@ namespace Net.SamuelChen.Tetris {
         public WizPageMultiPlayer() {
             InitializeComponent();
             m_skin = Skins.Instance;
-            m_setting = Setting.Instance;
+            m_setting = GameSetting.Instance;
             m_controllerIds = m_setting.ControllerIds;
 
             DataGridViewComboBoxColumn colController = dgvPlayers.Columns[1] as DataGridViewComboBoxColumn;

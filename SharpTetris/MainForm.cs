@@ -11,7 +11,6 @@
 using System;
 using System.Windows.Forms;
 using System.Collections.Generic;
-using Net.SamuelChen.Tetris.Service;
 using Net.SamuelChen.Tetris.Skin;
 using Net.SamuelChen.Tetris.Game;
 
@@ -100,7 +99,7 @@ namespace Net.SamuelChen.Tetris {
 
         #region fields
 
-        protected Setting m_setting = Setting.Instance;
+        protected GameSetting m_setting = GameSetting.Instance;
         protected Skins m_skin = Skins.Instance;
         private TetrisGame m_game = null;
 

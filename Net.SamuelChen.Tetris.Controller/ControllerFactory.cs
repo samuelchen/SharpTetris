@@ -15,39 +15,24 @@ namespace Net.SamuelChen.Tetris.Controller {
 
     public abstract class ControllerFactory :  IDisposable {
 
-        private static ControllerFactory m_instance;
-
-        /// <summary>
-        /// To get a factory instance. It will create a default (DirectX) one if there is not.
-        /// </summary>
-        public static ControllerFactory Instance {
-            get {
-                if (null == m_instance)
-                    CreateInstance(EnumControllerFactoryType.Virtual);
-                return m_instance;
-            }
-            protected set {
-                m_instance = value;
-            }
-        }
-
         /// <summary>
         /// To create a controller factory of given type.
         /// </summary>
         /// <param name="type">Controller type.</param>
         /// <returns>A implemented controller factory</returns>
         public static ControllerFactory CreateInstance(EnumControllerFactoryType type) {
+            ControllerFactory factory = null;
             switch (type) {
                 case EnumControllerFactoryType.Virtual:
-                    m_instance = new VirtualControllerFactory();
+                    factory = new VirtualControllerFactory();
                     break;
                 case EnumControllerFactoryType.DirectX:
-                    m_instance = new DxControllerFactory();
+                    factory = new DxControllerFactory();
                     break;
                 default:
                     throw new ControllerException("This type of ControllerFactory is not implmented.", null);
             }
-            return null;
+            return factory;
         }
 
         /// <summary>
@@ -75,6 +60,7 @@ namespace Net.SamuelChen.Tetris.Controller {
         /// <param name="controllerId"></param>
         /// <returns></returns>
         public abstract IController GetController(Guid controllerId);
+
 
         /// <summary>
         /// Create a virtual controller. Only availible for VirtualControllerFactory (Type is EnumControllerFactoryType.Virtual)

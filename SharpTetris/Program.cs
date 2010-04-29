@@ -11,7 +11,6 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Net.SamuelChen.Tetris.Service;
 using Net.SamuelChen.Tetris.Skin;
 using System.Diagnostics;
 using Net.SamuelChen.Tetris.Controller;
@@ -34,8 +33,9 @@ namespace Net.SamuelChen.Tetris {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 #endif
 
-            Setting.Instance.Load("setting.xml");
-            Skins.Instance.Load(Setting.Instance.Skin);
+            GameSetting.Instance.Load("setting.xml");
+            GameSetting.Instance.ControllerFactory = ControllerFactory.CreateInstance(EnumControllerFactoryType.DirectX);
+            Skins.Instance.Load(GameSetting.Instance.Skin);
             ControllerFactory.CreateInstance(EnumControllerFactoryType.DirectX);
             Trace.TraceInformation("#Tetris started.");
             GameBase.ActionMapping = new Dictionary<string, object>(){

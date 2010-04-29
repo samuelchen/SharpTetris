@@ -38,11 +38,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClientGame.cs" />
     <Compile Include="GameException.cs" />
     <Compile Include="GameBase.cs" />
     <Compile Include="Enum.cs" />
     <Compile Include="GameFactory.cs" />
     <Compile Include="HostGame.cs" />
+    <Compile Include="NetworkPlayer.cs" />
     <Compile Include="TetrisGame.cs" />
     <Compile Include="IGame.cs" />
     <Compile Include="LocalGame.cs" />
@@ -67,9 +69,9 @@
       <Project>{0E9455B1-9F88-4DA9-A847-05BA68D8FC56}</Project>
       <Name>Net.SamuelChen.Tetris.Controller</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Net.SamuelChen.Tetris.Service\Net.SamuelChen.Tetris.Service.csproj">
-      <Project>{3BBFC5E7-E5FB-4998-A429-CC32EDBAEC94}</Project>
-      <Name>Net.SamuelChen.Tetris.Service</Name>
+    <ProjectReference Include="..\Net.SamuelChen.Tetris.Network\Net.SamuelChen.Tetris.Network.csproj">
+      <Project>{EEA077F7-D2A0-4FD9-A4B8-173DF43928E9}</Project>
+      <Name>Net.SamuelChen.Tetris.Network</Name>
     </ProjectReference>
     <ProjectReference Include="..\Net.SamuelChen.Tetris.Skin\Net.SamuelChen.Tetris.Skin.csproj">
       <Project>{F67DCD28-4E0C-4766-817C-D57ED81D4218}</Project>

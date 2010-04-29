@@ -11,7 +11,7 @@
 using System;
 using System.Collections.Generic;
 namespace Net.SamuelChen.Tetris.Game {
-    public interface IGame : IDisposable {
+    public interface IGame {
         IDictionary<string, Player> Players { get; }
         EnumGameStatus Status { get; }
         object Tag { get; set; }
@@ -23,7 +23,5 @@ namespace Net.SamuelChen.Tetris.Game {
         void Pause();
         void Resume();
         void Stop();
-
-        void Dispose();
     }
 }

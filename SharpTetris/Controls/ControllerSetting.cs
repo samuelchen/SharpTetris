@@ -99,6 +99,7 @@ namespace Net.SamuelChen.Tetris {
             tab.Name = name;
             csp.Dock = DockStyle.Fill;
             csp.Name = name;
+            csp.FactoryType = EnumControllerFactoryType.DirectX;
             csp.Init();
             csp.SetActions(this.Actions.ToArray());
             tab.Controls.Add(csp);
