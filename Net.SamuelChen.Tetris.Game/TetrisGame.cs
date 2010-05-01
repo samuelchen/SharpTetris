@@ -39,8 +39,8 @@ namespace Net.SamuelChen.Tetris.Game {
 
         #endregion
 
-        public virtual void Refresh() {
-        }
+        //public virtual void Refresh() {
+        //}
 
 
         public override void Start() {

@@ -137,6 +137,12 @@ namespace Net.SamuelChen.Tetris.Controller {
             foreach (IController c in m_controllers.Values)
                 c.Dispose();
             m_controllers.Clear();
+            foreach (IController c in m_joysticks.Values)
+                c.Dispose();
+            m_joysticks.Clear();
+            foreach (IController c in m_keyboards.Values)
+                c.Dispose();
+            m_keyboards.Clear();
 
             _disposed = true;
         }

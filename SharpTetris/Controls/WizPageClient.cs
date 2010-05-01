@@ -7,11 +7,14 @@ using System.Text;
 using System.Windows.Forms;
 using Net.SamuelChen.Tetris.Skin;
 using Net.SamuelChen.Tetris.Game;
+using System.Text.RegularExpressions;
 
 namespace Net.SamuelChen.Tetris {
     public partial class WizPageClient : UserControl, IWizardPage {
         public WizPageClient() {
             InitializeComponent();
+
+            txtName.Text = m_setting.DefaultPlayerName;
         }
 
         private void LoadSkins() {
@@ -40,7 +43,8 @@ namespace Net.SamuelChen.Tetris {
         }
 
         public object GetValue() {
-            return null;
+            string info = string.Format("name={0},server_ip={1},server_port={2}", txtName.Text, txtHostIP.Text, txtHostPort.Text);
+            return info;
         }
 
         public new void Hide() {
@@ -49,5 +53,42 @@ namespace Net.SamuelChen.Tetris {
         }
 
         #endregion
+
+        private void btnPaste_Click(object sender, EventArgs e) {
+            string info = Clipboard.GetText();
+            txtInfo.Text = info;
+            Regex r = new Regex(@"\b(((2[0-5][0-5])|([0-1]?[0-9]?[0-9]))\.){3}(((2[0-5][0-5])|([0-1]?[0-9]?[0-9]))):\d{1,5}\b");
+            Regex r1 = new Regex(@"^[^\d]\w+:\d{1,5}$");
+            if (r.IsMatch(info) || r1.IsMatch(info)) {
+                string[] tmp = info.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+                txtHostIP.Text = tmp[0];
+                txtHostPort.Text = tmp[1];
+            }
+        }
+
+        private void txtHostIP_Validating(object sender, CancelEventArgs e) {
+            //Regex r = new Regex(@"\b((((2[0-5][0-5])|([0-1]?[0-9]?[0-9]))\.){3}(2[0-5][0-5])|([0-1]?[0-9]?[0-9]))\b");
+            //Regex r1 = new Regex(@"^[^\d]\w+:\d{1,5}$");
+            //if (!r.IsMatch(txtHostIP.Text) && !r1.IsMatch(txtHostIP.Text)) {
+            //    txtInfo.Text = string.Format(m_skin.GetString("err_invalid_ip"), txtHostPort.Text);
+            //    e.Cancel = true;
+            //}
+        }
+
+        private void txtHostPort_Validating(object sender, CancelEventArgs e) {
+            int port = Convert.ToInt32(txtHostPort.Text);
+            if (port < 1 || port > 65535) {
+                txtInfo.Text = string.Format(m_skin.GetString("err_invalid_port"), txtHostPort.Text);
+                e.Cancel = true;
+            }
+        }
+
+        private void txtName_KeyPress(object sender, KeyPressEventArgs e) {
+            Regex r = new Regex(@"^[^\d]\w+$");
+            if (!r.IsMatch(txtName.Text))
+                e.Handled = true;
+        }
+
+        private GameSetting m_setting = GameSetting.Instance;
     }
 }

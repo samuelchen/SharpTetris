@@ -31,7 +31,7 @@ namespace Net.SamuelChen.Tetris.Game {
         }
 
         #region Properties
-        public int ServerPort { get; set; }
+        //public int ServerPort { get; set; }
         #endregion
 
         private void PrivateInit() {
@@ -40,8 +40,6 @@ namespace Net.SamuelChen.Tetris.Game {
             // the timer is controlled by server.
             m_timer.Dispose();
             m_timer = null;
-
-            m_clientPlayers = new Dictionary<string, string>();
 
             m_client = new Client();
             m_client.Connected += new EventHandler(OnConnected);
@@ -76,6 +74,10 @@ namespace Net.SamuelChen.Tetris.Game {
 
         public void Connect(IPEndPoint serverEndPoint) {
             m_client.Connect(serverEndPoint);
+        }
+
+        public void Connect(string hostNameOrIP, int port) {
+            m_client.Connect(hostNameOrIP, port);
         }
 
         public void Disconnect() {
@@ -135,35 +137,34 @@ namespace Net.SamuelChen.Tetris.Game {
         }
 
         #region Game Action
-        public void Go(string clientName) {
-            clientName = clientName.Trim();
-            if (clientName.Equals("ALL")) {
-                foreach (NetworkPlayer player in this.Players.Values)
+        public void Go(string playerName) {
+            Debug.Assert(!string.IsNullOrEmpty(playerName));
+
+            playerName = playerName.Trim();
+            if (playerName.Equals("ALL")) {
+                foreach (Player player in this.Players.Values)
                     player.PlayFiled.Go();
             } else {
                 Player player = null;
-                string name = null;
-                if (!m_clientPlayers.TryGetValue(clientName, out name) || name == null)
-                    return;
-                player = this.Players[name];
-                player.PlayFiled.Go();
+                if (this.Players.TryGetValue(playerName, out player)) {
+                    player.PlayFiled.Go();
+                }
             }
-
             
         }
 
-        public void Move(string clientName, string enumMoving) {
-            clientName = clientName.Trim();
-            if (clientName.Equals("ALL")) {
-                foreach (NetworkPlayer player in this.Players.Values)
+        public void Move(string playerName, string enumMoving) {
+            Debug.Assert(!string.IsNullOrEmpty(playerName));
+
+            playerName = playerName.Trim();
+            if (playerName.Equals("ALL")) {
+                foreach (Player player in this.Players.Values)
                     player.PlayFiled.Go(enumMoving);
             } else {
                 Player player = null;
-                string name = null;
-                if (!m_clientPlayers.TryGetValue(clientName, out name) || name == null)
-                    return;
-                player = this.Players[name];
-                player.PlayFiled.Go(enumMoving);
+                if (this.Players.TryGetValue(playerName, out player)) {
+                    player.PlayFiled.Go(enumMoving);
+                }
             }
         }
 
@@ -188,20 +189,6 @@ namespace Net.SamuelChen.Tetris.Game {
 
         #region override
 
-        public override void AddPlayer(Player player) {
-            NetworkPlayer p = player as NetworkPlayer;
-            Debug.Assert(p != null && p.Name != null && p.HostName != null);
-            base.AddPlayer(p);
-            m_clientPlayers.Add(p.HostName, p.Name);
-        }
-
-        public override void RemovePlayer(Player player) {
-            NetworkPlayer p = player as NetworkPlayer;
-            Debug.Assert(p != null && p.Name != null && p.HostName != null);
-            base.RemovePlayer(p);
-            m_clientPlayers.Remove(p.HostName);
-        }
-
         #endregion
 
 
@@ -221,8 +208,6 @@ namespace Net.SamuelChen.Tetris.Game {
         #region Fields
 
         protected Client m_client;
-        protected NetworkPlayer m_player;
-        protected IDictionary<string, string> m_clientPlayers;
 
         #endregion
 

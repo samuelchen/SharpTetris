@@ -4,6 +4,7 @@
     <skin>default</skin>
     <log>log.txt</log>
     <port>9527</port>
+    <max_players>4</max_players>
     <default_player>Samuel</default_player>
     <default_controller>6f1d2b61-d5a0-11cf-bfc7-444553540000</default_controller>
   </general>

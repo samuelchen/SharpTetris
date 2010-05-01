@@ -10,6 +10,7 @@
 
 using System;
 using Net.SamuelChen.Tetris.Controller;
+using System.Net;
 
 namespace Net.SamuelChen.Tetris.Game
 {
@@ -48,6 +49,18 @@ namespace Net.SamuelChen.Tetris.Game
         /// </summary>
         public PlayPanel PlayFiled { get; set; }
 
+        public InfoPanel InfoPanel { get; set; }
+
+        /// <summary>
+        /// IP address for network game
+        /// </summary>
+        public IPEndPoint EndPoint { get; set; }
+
+        /// <summary>
+        /// Server name for network game
+        /// </summary>
+        public string HostName { get; set; }
+
         public static string CreateName() {
             return string.Format("Player{0}", m_autoId++);
         }
@@ -59,10 +72,17 @@ namespace Net.SamuelChen.Tetris.Game
             if (_disposed)
                 return;
 
-            if (null != this.PlayFiled)
+            if (null != this.PlayFiled) {
                 this.PlayFiled.Dispose();
+                this.PlayFiled = null;
+            }
+            if (null != this.InfoPanel) {
+                this.InfoPanel.Dispose();
+                this.InfoPanel = null;
+            }
             if (null != this.Controller) {
                 this.Controller.Stop();
+                this.Controller = null;
                 // don't dispose controller here.
             }
 

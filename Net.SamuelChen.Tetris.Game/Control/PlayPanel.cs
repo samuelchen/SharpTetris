@@ -9,16 +9,13 @@
 //=======================================================================
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.Threading;
 
 using Net.SamuelChen.Tetris.Blocks;
-using Net.SamuelChen.Tetris.Controller;
 using Net.SamuelChen.Tetris.Skin;
-using System.Collections.Generic;
-using System.Diagnostics;
 
+// TODO: refactor as InfoPanel
 namespace Net.SamuelChen.Tetris.Game {
 
     /// <summary>
@@ -61,7 +58,7 @@ namespace Net.SamuelChen.Tetris.Game {
             this.TabStop = false;
             this.m_curShape = null;
             this.m_nextShape = null;
-            this.Status = EnumGameStatus.Initialized;
+            this.Status = EnumGameStatus.Ready;
             this.RePaint();
 
             //m_Game = theGame;
@@ -415,7 +412,6 @@ namespace Net.SamuelChen.Tetris.Game {
 
         #endregion
 
-
         #region Drawing
 
         /// <summary>
@@ -436,7 +432,7 @@ namespace Net.SamuelChen.Tetris.Game {
             DrawCurShape(e.Graphics);
             string sStatus = string.Empty;
             switch (this.Status) {
-                case EnumGameStatus.Initialized:
+                case EnumGameStatus.Ready:
                     sStatus = m_skin.GetString("ready!");
                     break;
                 case EnumGameStatus.Running:
@@ -578,14 +574,10 @@ namespace Net.SamuelChen.Tetris.Game {
 
         #endregion
 
-
         #region Fields
 
-        //protected Game			m_Game;					// the game instance
-        protected IController m_Controller;			// the controller instance
+        
         protected Player m_Player;				// the player
-        //protected CCounter		m_Counter;				// counter
-        //protected CInfomationPanel m_InfoPanel;			// information panel
 
         protected Block[,] m_Cells;				// background cells
         protected Shape m_curShape;				// current shape

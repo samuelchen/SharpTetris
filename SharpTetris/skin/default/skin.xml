@@ -58,41 +58,56 @@
       <string name="wiz_muti_remove_selected_player">Remove selected player.</string>
 
       <string name="wiz_host_prompt">Please input host informations. Leave the default value if you don't know.</string>
-      <string name="wiz_host_name">Game ^Name:</string>
-      <string name="wiz_host_port">Network Por^t:</string>
-      <string name="wiz_host_player_number">Player Nu^mber:</string>
+      <string name="wiz_host_name">Your ^Name:</string>
+      <string name="wiz_host_port">Service ^Port:</string>
+      <string name="wiz_host_max_players">^Max Players:</string>
       <string name="wiz_host_btn_copy">^Copy to clipboard</string>
-      <string name="wiz_host_info_display">
-        Please tell your players the game host information:
-        ------------ COPY FROM BELOW ---------------
+      <string name="wiz_host_info_copy">Please tell your client players the game host information :
+        ------------ COPY START ---------------
         {0}
-        ------------ COPY UNTIL ABOVE ---------------
+        ------------  COPY END  ---------------
+        Already copied to your clipboard. 
+        Just paste to IM/Email to tell your friends who will join the game.
       </string>
       <string name="wiz_host_info">
-        Host IP Address : {0} #
-        Network Port    : {1} #
-        Max Players     : {2} #
+            Server IP       : {0}
+            Service Port    : {1}
+            Max Players     : {2}
       </string>
 
       <string name="wiz_client_prompt">Please input host informations. Request and copy from your host if you don't know.</string>
       <string name="wiz_client_name">Your ^Name:</string>
-      <string name="wiz_client_port">Network Por^t:</string>
-      <string name="wiz_client_player_number">Host ^IP Address:</string>
+      <string name="wiz_client_server_port">Server Por^t:</string>
+      <string name="wiz_client_server_ip">Server ^IP Address:</string>
       <string name="wiz_client_btn_copy">^Paste from clipboard</string>
-
+      <string name="wiz_client_info">
+            Server IP       : {0}
+            Server Port     : {1}
+      </string>
+      
       <string name="wiz_summary">
         Summary:
         ------------------------------------
-        Game Type: {0}
+        1. Game Type: 
+        {0}
 
-        Players:
+        2. Players:
         {1}
+        
+        3. Information to Host a Server Game:
+        {2}
+        
+        4. Information to Join a Server Game:
+        {3}
+        
       </string>
     </wizard>
     <error>
       <string name="error">Error</string>
       <string name="err_duplicate_value">Duplicate values find, please check your input.</string>
       <string name="err_invalid_player_name">Player name ({0}) is invalid.</string>
+      <string name="err_invalid_ip">IP address ({0}) is invalid.</string>
+      <string name="err_invalid_port">Port nubmer ({0}) is invalid.</string>
     </error>
   </strings>
   <fonts>

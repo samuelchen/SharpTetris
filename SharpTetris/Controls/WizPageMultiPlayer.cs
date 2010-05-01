@@ -28,12 +28,11 @@ namespace Net.SamuelChen.Tetris {
         protected GameSetting m_setting;
 
         private List<string> m_controllerIds;
-
         public List<Player> Players {
             get {
                 List<Player> players = new List<Player>();
                 for (int i = 0; i < dgvPlayers.Rows.Count; i++) {
-                    Player player = new Player();
+                    Player player = player = new Player();
                     player.Name = dgvPlayers.Rows[i].Cells[0].Value as string;
                     if (string.IsNullOrEmpty(player.Name))
                         continue;

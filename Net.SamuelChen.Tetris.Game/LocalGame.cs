@@ -41,27 +41,32 @@ namespace Net.SamuelChen.Tetris.Game {
             m_timer.Elapsed += this.OnTimer_Elapsed;
         }
 
-        public override void Refresh() {
-            base.Refresh();
+        //public override void Refresh() {
+        //    base.Refresh();
 
-            PlayPanel panel = null;
-            int i = 0;
-            foreach (Player player in this.Players.Values) {
-                panel = player.PlayFiled;
-                if (null != panel) {
-                    panel.Show(i * (panel.Width + 20) + 20, 40);
-                    //panel.InfoPanel.Show(10*(i+1) + panel.Width*i, 10);
-                    //panel.Show(panel.InfoPanel.Left, panel.InfoPanel.Top + panel.InfoPanel.Height + 10);
-                    i++;
-                }
-            }
+        //    PlayPanel panel = null;
+        //    InfoPanel info = null;
+        //    int i = 0;
+        //    foreach (Player player in this.Players.Values) {
+        //        info = player.InfoPanel;
+        //        if (null != info) {
+        //            info.Show(i * (info.Width + 20) + 20, 40);
+        //        }
+                
+        //        panel = player.PlayFiled;
+        //        if (null != panel) {
+        //            panel.Show(i * (panel.Width + 20) + 20, info.Bottom + 20);
+        //        }
 
-            // adjust form size depends on last panel.
-            if (null != panel) {
-                this.Container.Height = panel.Height + 100;
-                this.Container.Width = panel.Right + 30;
-            }
-        }
+        //        i++;
+        //    }
+
+        //    // adjust form size depends on last panel.
+        //    if (null != panel) {
+        //        this.Container.Height = panel.Bottom + 60;
+        //        this.Container.Width = panel.Right + 30;
+        //    }
+        //}
 
         public override void AddPlayer(Player player) {
             base.AddPlayer(player);
@@ -89,19 +94,21 @@ namespace Net.SamuelChen.Tetris.Game {
         /// </summary>
         public override void New() {
             base.New();
-            this.GetReady();
-            m_timer.Interval = 3000;
+            //this.GetReady();
+            if (null != m_timer)
+                m_timer.Interval = 3000;
+
         }
 
 
-        public void GetReady() {
-            foreach (Player player in this.Players.Values) {
-                PlayPanel panel = player.PlayFiled;
-                if (null != panel) {
-                    panel.RePaint();
-                }
-            }
-        }
+        //public void GetReady() {
+        //    foreach (Player player in this.Players.Values) {
+        //        PlayPanel panel = player.PlayFiled;
+        //        if (null != panel) {
+        //            panel.RePaint();
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// Start a game
@@ -127,9 +134,8 @@ namespace Net.SamuelChen.Tetris.Game {
                     ctrlr.Start();
                 }
             }
-
-            m_timer.Start();
-            this.Refresh();
+            if (null != m_timer)
+                m_timer.Start();
         }
 
         /// <summary>
@@ -137,7 +143,8 @@ namespace Net.SamuelChen.Tetris.Game {
         /// </summary>
         public override void Stop() {
             base.Stop();
-            m_timer.Stop();
+            if (null != m_timer)
+                m_timer.Stop();
 
             foreach (Player player in this.Players.Values) {
                 PlayPanel panel = player.PlayFiled;
@@ -159,7 +166,8 @@ namespace Net.SamuelChen.Tetris.Game {
         /// Pause
         /// </summary>
         public override void Pause() {
-            m_timer.Stop();
+            if (null != m_timer)
+                m_timer.Stop();
             base.Pause();
             foreach (Player player in this.Players.Values) {
                 PlayPanel panel = player.PlayFiled;
@@ -182,7 +190,9 @@ namespace Net.SamuelChen.Tetris.Game {
                     panel.RePaint();
                 }
             }
-            m_timer.Start();
+
+            if (null != m_timer)
+                m_timer.Start();
 
         }
 
@@ -192,6 +202,9 @@ namespace Net.SamuelChen.Tetris.Game {
         #region events
 
         void Controller_Pressed(object sender, ControllerPressedEventArgs e) {
+            if (this.Status != EnumGameStatus.Running)
+                return;
+
             IController c = sender as IController;
             string action = string.Empty;
             Player player;
@@ -230,11 +243,17 @@ namespace Net.SamuelChen.Tetris.Game {
 
 
         #region IDisposable Members
-
+        private bool _disposed = false;
         public override void Dispose() {
-            m_timer.Stop();
-            m_timer.Dispose();
+            if (_disposed)
+                return;
+
+            if (null != m_timer) {
+                m_timer.Stop();
+                m_timer.Dispose();
+            }
             base.Dispose();
+            _disposed = true;
         }
 
         #endregion

@@ -34,33 +34,68 @@ namespace Net.SamuelChen.Tetris {
             if (null == options || options.Count < 2)
                 return false;
             //this.Options = options;
-
-            StringBuilder sb = new StringBuilder();
+            
             EnumGameType type = (EnumGameType)options[0];
             List<Player> players = options[1] as List<Player>;
+
+            StringBuilder sb = new StringBuilder();
+            string[] summary = new string[4];
+
+            summary[2] = "    N/A";
+            summary[3] = "    N/A";
+
+            summary[0] = string.Format("    {0}", type.ToString());
+
             if (type == EnumGameType.Multiple) {
                 foreach (Player player in players) {
                     if (null == player)
                         continue;
-                    sb.AppendLine(string.Format("\t{0}: {1}\t{2}: {3}",
+                    sb.AppendLine( string.Format("    {0}: {1}\t{2}: {3}",
                         m_skin.GetString("wiz_muti_col_player"), player.Name,
                         m_skin.GetString("wiz_muti_col_controller"),
-                        (null == player.Controller ? "-" : player.Controller.Name)
+                        (null == player.Controller ? "N/A" : player.Controller.Name)
                         ));
                 }
+                summary[1] = sb.ToString();
+
             } else {
+
                 Player player = null;
                 if (null != players && players.Count > 0 && null != (player = players[0])) {
 
-                    sb.AppendLine(string.Format("\t{0}: {1}\t{2}: {3}",
+                    summary[1] = string.Format("    {0}: {1}\t{2}: {3}",
                         m_skin.GetString("wiz_muti_col_player"), player.Name,
                         m_skin.GetString("wiz_muti_col_controller"),
                         (null == player.Controller ? "-" : player.Controller.Name)
-                        ));
+                        );
+                }
+
+
+                if (type == EnumGameType.Single) {
+
+                } else if (type == EnumGameType.Host) {
+                    if (options.Count < 3)
+                        return false;
+
+                    // host info format : name={0},ip={1},port={2},max_players={3}
+                    string hostGameInfo = options[2] as string;
+                    string[] info = hostGameInfo.Split(new char[] { ',', '=' });
+                    string txtInfo = string.Format(m_skin.GetString("wiz_host_info"), info[3], info[5], info[7]);
+                    summary[2] = txtInfo;
+
+                } else if (type == EnumGameType.Client) {
+                    if (options.Count < 4)
+                        return false;
+
+                    // client info format : name={0},server_ip={1},server_port={2}
+                    string clientGameInfo = options[3] as string;
+                    string[] info = clientGameInfo.Split(new char[] { ',', '=' });
+                    string txtInfo = string.Format(m_skin.GetString("wiz_client_info"), info[3], info[5]);
+                    summary[3] = txtInfo;
                 }
             }
             txtSummary.Text = string.Format(m_skin.GetString("wiz_summary"),
-                type.ToString(), sb.ToString());
+                summary[0], summary[1], summary[2], summary[3]);
             
             this.Dock = DockStyle.Fill;
             this.Visible = true;

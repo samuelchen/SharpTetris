@@ -58,8 +58,7 @@ namespace Net.SamuelChen.Tetris.Game {
         }
 
         void OnClientConnecting(object sender, NetworkEventArgs e) {
-            if (this.Status != EnumGameStatus.Running
-                || this.Players.Count == this.MaxPlayers)
+            if (this.Players.Count == this.MaxPlayers)
                 e.Cancelled = true;
         }
 
@@ -115,6 +114,10 @@ namespace Net.SamuelChen.Tetris.Game {
             m_server.Boardcast(new NetworkContent(EnumNetworkContentType.String, command));
         }
 
+
+
+        #region Game Control
+
         public void StartService() {
             m_server.MaxConnections = this.MaxPlayers;
             m_server.Start();
@@ -122,8 +125,6 @@ namespace Net.SamuelChen.Tetris.Game {
         public void StopService() {
             m_server.Stop();
         }
-
-        #region override
 
         /// <summary>
         /// New game

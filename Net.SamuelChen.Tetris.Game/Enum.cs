@@ -4,7 +4,8 @@ using System.Text;
 
 namespace Net.SamuelChen.Tetris.Game {
     public enum EnumGameStatus {
-        Initialized = 0,
+        None = 0,
+        Ready,
         Running,
         Paused,
         Defeated,

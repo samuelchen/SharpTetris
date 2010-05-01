@@ -13,6 +13,9 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using Net.SamuelChen.Tetris.Skin;
 using Net.SamuelChen.Tetris.Game;
+using System.Diagnostics;
+using System.Net;
+using System.Drawing;
 
 namespace Net.SamuelChen.Tetris {
     public partial class MainForm : Form {
@@ -24,9 +27,11 @@ namespace Net.SamuelChen.Tetris {
                 ToolStripItem mi = mnMain.Items[i];
                 mi.Click += new EventHandler(OnAllMenu_Click);
             }
+
+            m_gameContainer = this;
         }
 
-        #region events
+        #region UI Events
 
         private void MainForm_Load(object sender, EventArgs e) {
 
@@ -42,23 +47,26 @@ namespace Net.SamuelChen.Tetris {
                 IList<object> options = wizardNewGame.Options;
                 EnumGameType type = (EnumGameType)options[0];
                 List<Player> players = options[1] as List<Player>;
+                string hostGameInfo = options[2] as string;
+                string clientGameInfo = options[3] as string;
+                //wizardNewGame.Close();             
 
-                TetrisGame game = GameFactory.CreateGame(type) as TetrisGame;
-                game.Container = this;
-                foreach (Player player in players) {
-                    player.PlayFiled = new PlayPanel();
-                    game.AddPlayer(player);
+                switch (type){
+                    case EnumGameType.Single:
+                    case EnumGameType.Multiple:
+                        this.StartLocalGame(type, players);
+                        break;
+                    case EnumGameType.Host:
+                        this.StartHostGame(players, hostGameInfo);
+                        break;
+                    case EnumGameType.Client:
+                        this.StartClientGame(players, clientGameInfo);
+                        break;
+                    default:
+                        break;
                 }
 
-                wizardNewGame.Close();
-
-                if (null != m_game) 
-                    m_game.Dispose();
-
-                m_game = game;
-                game.New();
-                game.Refresh();
-                game.Start();
+                //wizardNewGame.Close();
             }
         }
 
@@ -79,7 +87,172 @@ namespace Net.SamuelChen.Tetris {
 
         #endregion
 
-        #region private methods
+        #region Game methods
+
+        private void StartLocalGame(EnumGameType type, IList<Player> players) {
+            LocalGame game = GameFactory.CreateGame(type) as LocalGame;
+            game.Container = m_gameContainer;
+            foreach (Player player in players) {
+                this.InitPlayer(player);
+                game.AddPlayer(player);
+            }
+
+            if (null != m_game)
+                m_game.Dispose();
+
+            m_game = game;
+            game.New();
+            this.Refresh();
+            game.Start();
+        }
+
+        private void StartHostGame(List<Player> players, string hostGameInfo) {
+            // host game info format : name={0},ip={1},port={2},max_players={3}
+            string[] info = hostGameInfo.Split(new char[] { ',', '=' });
+
+            Debug.Assert(info.Length == 8 && players != null && players.Count > 0 
+                && !string.IsNullOrEmpty(hostGameInfo));
+
+            int port = Convert.ToInt32(info[5]);
+            int max = Convert.ToInt32(info[7]);
+            Debug.Assert(max >= 2 && max < GameSetting.LIMITED_MAX_PLAYERS);
+
+            if (null != m_serverGame)
+                m_serverGame.Dispose();
+            m_serverGame = GameFactory.CreateGame(EnumGameType.Host) as ServerGame;
+            m_serverGame.PlayerJoined += new EventHandler<PlayerEventArgs>(ServerGame_PlayerJoined);
+            m_serverGame.PlayerLeaved += new EventHandler<PlayerEventArgs>(ServerGame_PlayerLeaved);
+            m_serverGame.ServicePort = port;
+            m_serverGame.MaxPlayers = max;
+            m_serverGame.StartService();
+
+            // A host is also a client when hosting a server game.
+            IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Parse(info[3]), port);
+            Player player = players[0]; // first player as local player
+            this.InitPlayer(player);
+            player.Name = info[1];
+            if (null != m_game)
+                m_game.Dispose();
+            ClientGame game = (m_game = GameFactory.CreateGame(EnumGameType.Client) as TetrisGame) as ClientGame;
+            game.Container = m_gameContainer;
+            game.AddPlayer(player);
+            game.Connect("localhost", port);
+
+            this.Refresh();
+
+            //WaitForClientForm dlg = new WaitForClientForm();
+            //DialogResult result = dlg.ShowDialog();
+            //if (result == DialogResult.OK) {
+            //    m_serverGame.Start();
+            //} else {
+            //    game.Disconnect();
+            //    m_serverGame.Stop();
+            //    game.Dispose();
+            //    m_serverGame.Dispose();
+            //    m_game = null;
+            //    m_serverGame = null;
+            //    return;
+            //}
+
+            
+        }
+
+        private void StartClientGame(List<Player> players, string clientGameInfo) {
+            // client game info format : name={0},server_ip={1},server_port={2}
+            string[] info = clientGameInfo.Split(new char[] { ',', '=' });
+
+            Debug.Assert(info.Length == 6 && players != null && players.Count > 0
+                && !string.IsNullOrEmpty(clientGameInfo));
+
+            //IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Parse(info[3]), Convert.ToInt32(info[5]));
+            Player player = players[0]; // first player as local player
+            this.InitPlayer(player);
+            player.Name = info[1];
+            if (null != m_game)
+                m_game.Dispose();
+            ClientGame game = (m_game = GameFactory.CreateGame(EnumGameType.Client) as TetrisGame) as ClientGame;
+            game.Container = m_gameContainer;
+            game.AddPlayer(player);
+            //game.Connect(serverEndPoint);
+            game.Connect(info[3], Convert.ToInt32(info[5]));
+
+
+            this.Refresh();
+        }
+
+        private void ShowGameInfo() {
+        }
+
+        public override void Refresh() {
+            base.Refresh();
+            if (null == m_game)
+                return;
+
+            PlayPanel panel = null;
+            InfoPanel info = null;
+            int padX = 20, padY = 20;
+
+            int i = 0;
+            foreach (Player player in m_game.Players.Values) {
+                info = player.InfoPanel;
+                if (null != info) {
+                    info.Show(i * (info.Width + padX) + padX, padY + 20);
+                }
+
+                panel = player.PlayFiled;
+                if (null != panel) {
+                    panel.Show(i * (panel.Width + padX) + padX, info.Bottom + padY);
+                }
+
+                i++;
+            }
+
+            if (m_game.GameType == EnumGameType.Client || m_game.GameType == EnumGameType.Host) {
+
+                if (m_networkGameInfoPanel == null)
+                    m_networkGameInfoPanel = new InfoPanel(m_gameContainer);
+
+                // adjust NetworkGameInfoPanel size depends on last panel
+                info = m_networkGameInfoPanel;
+                info.Width = panel.Right - padX;
+                info.Height = 100;
+                info.Show(padX, panel.Bottom + padY + 20);
+
+                this.Height = info.Bottom + padY + 20;
+                this.Width = info.Right + padX + 10;
+
+            } else if (null != panel) {
+                if (null != m_networkGameInfoPanel) {
+                    m_networkGameInfoPanel.Dispose();
+                    m_networkGameInfoPanel = null;
+                }
+                // adjust form size depends on last panel.
+                this.Height = panel.Bottom + padY + 40;
+                this.Width = panel.Right + padX + 10;
+            }
+
+            this.Invalidate();
+
+        }
+
+        #endregion
+
+        #region Game Events
+
+        void ServerGame_PlayerLeaved(object sender, PlayerEventArgs e) {
+            throw new NotImplementedException();
+        }
+
+        void ServerGame_PlayerJoined(object sender, PlayerEventArgs e) {
+            Player player = e.Player;
+            m_networkGameInfoPanel.AddString("info", "Player " + player.Name + " joined.", new Font("MSYH", 8), Brushes.CadetBlue, 5, 5, 0, 0);
+            if (m_serverGame.Players.Count == m_serverGame.MaxPlayers)
+                m_serverGame.Start();
+        }
+
+        #endregion
+
+        #region Private methods
 
         private void LoadSkins() {
             this.Text = m_skin.GetString("app_name");
@@ -95,6 +268,15 @@ namespace Net.SamuelChen.Tetris {
                 miAbout.Text = "&About";
         }
 
+        private void InitPlayer(Player player) {
+            player.PlayFiled = new PlayPanel();
+            player.InfoPanel = new InfoPanel(m_gameContainer);
+            player.InfoPanel.Width = player.PlayFiled.Width;
+            player.InfoPanel.Height = 100;
+            player.InfoPanel.AddString("name", player.Name, 
+                new Font(FontFamily.GenericSansSerif, 8), 
+                Brushes.Gray, 0, 0, 0, 0);
+        }
         #endregion
 
         #region fields
@@ -102,6 +284,9 @@ namespace Net.SamuelChen.Tetris {
         protected GameSetting m_setting = GameSetting.Instance;
         protected Skins m_skin = Skins.Instance;
         private TetrisGame m_game = null;
+        private ServerGame m_serverGame = null; // only used for host game.
+        private Form m_gameContainer = null;
+        private InfoPanel m_networkGameInfoPanel = null;
 
         #endregion
 

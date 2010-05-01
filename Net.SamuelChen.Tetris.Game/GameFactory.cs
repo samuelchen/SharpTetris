@@ -33,7 +33,11 @@ namespace Net.SamuelChen.Tetris.Game {
                     game = new LocalGame(type, null); // assign the container later
                     break;
                 case EnumGameType.Host:
+                    game = new ServerGame();
+                    break;
                 case EnumGameType.Client:
+                    game = new ClientGame();
+                    break;
                 default:
                     throw new GameException("This type of game is not implmented.", null);
             }

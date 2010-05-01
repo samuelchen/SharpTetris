@@ -25,7 +25,7 @@ namespace Net.SamuelChen.Tetris.Service {
             m_xmldoc = new XmlDocument();
             m_general = new Dictionary<string,string>();
 
-            string logName = AppDomain.CurrentDomain.ApplicationIdentity.FullName;
+            string logName = AppDomain.CurrentDomain.FriendlyName;
             m_listener = new EventLogTraceListener(logName);
             Trace.Listeners.Add(m_listener);
         }
@@ -37,8 +37,6 @@ namespace Net.SamuelChen.Tetris.Service {
         /// </summary>
         public static Setting Instance {
             get {
-                if (null == m_instance)
-                    m_instance = new Setting();
                 return m_instance;
             }
             set {

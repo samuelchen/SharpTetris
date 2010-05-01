@@ -69,7 +69,7 @@ namespace Net.SamuelChen.Tetris.Game {
         #endregion
 
         public virtual void New() {
-            Status = EnumGameStatus.Initialized;
+            Status = EnumGameStatus.Ready;
         }
 
         public virtual void Pause() {

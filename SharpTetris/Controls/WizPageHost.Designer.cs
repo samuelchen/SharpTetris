@@ -32,6 +32,7 @@
             this.numPlayers = new System.Windows.Forms.NumericUpDown();
             this.btnCopy = new System.Windows.Forms.Button();
             this.txtInfo = new System.Windows.Forms.TextBox();
+            this.lblIP = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.numPlayers)).BeginInit();
             this.SuspendLayout();
             // 
@@ -49,9 +50,9 @@
             this.lblName.AutoSize = true;
             this.lblName.Location = new System.Drawing.Point(50, 40);
             this.lblName.Name = "lblName";
-            this.lblName.Size = new System.Drawing.Size(69, 13);
+            this.lblName.Size = new System.Drawing.Size(63, 13);
             this.lblName.TabIndex = 1;
-            this.lblName.Text = "Game Name:";
+            this.lblName.Text = "Your Name:";
             // 
             // lblPort
             // 
@@ -67,16 +68,17 @@
             this.lblPlayers.AutoSize = true;
             this.lblPlayers.Location = new System.Drawing.Point(50, 100);
             this.lblPlayers.Name = "lblPlayers";
-            this.lblPlayers.Size = new System.Drawing.Size(84, 13);
+            this.lblPlayers.Size = new System.Drawing.Size(64, 13);
             this.lblPlayers.TabIndex = 3;
-            this.lblPlayers.Text = "Player Numbers:";
+            this.lblPlayers.Text = "Max Players";
             // 
             // txtName
             // 
             this.txtName.Location = new System.Drawing.Point(170, 37);
             this.txtName.Name = "txtName";
             this.txtName.Size = new System.Drawing.Size(100, 20);
-            this.txtName.TabIndex = 4;
+            this.txtName.TabIndex = 0;
+            this.txtName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtName_KeyPress);
             // 
             // txtPort
             // 
@@ -84,36 +86,50 @@
             this.txtPort.Mask = "0000";
             this.txtPort.Name = "txtPort";
             this.txtPort.Size = new System.Drawing.Size(100, 20);
-            this.txtPort.TabIndex = 5;
+            this.txtPort.TabIndex = 1;
+            this.txtPort.Validating += new System.ComponentModel.CancelEventHandler(this.txtPort_Validating);
             // 
             // numPlayers
             // 
             this.numPlayers.Location = new System.Drawing.Point(170, 98);
             this.numPlayers.Name = "numPlayers";
             this.numPlayers.Size = new System.Drawing.Size(100, 20);
-            this.numPlayers.TabIndex = 6;
+            this.numPlayers.TabIndex = 2;
             // 
             // btnCopy
             // 
             this.btnCopy.Location = new System.Drawing.Point(285, 130);
             this.btnCopy.Name = "btnCopy";
             this.btnCopy.Size = new System.Drawing.Size(75, 56);
-            this.btnCopy.TabIndex = 8;
+            this.btnCopy.TabIndex = 3;
             this.btnCopy.Text = "copy to clipboard";
             this.btnCopy.UseVisualStyleBackColor = true;
+            this.btnCopy.Click += new System.EventHandler(this.btnCopy_Click);
             // 
             // txtInfo
             // 
             this.txtInfo.Location = new System.Drawing.Point(53, 130);
             this.txtInfo.Multiline = true;
             this.txtInfo.Name = "txtInfo";
+            this.txtInfo.ReadOnly = true;
+            this.txtInfo.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtInfo.Size = new System.Drawing.Size(217, 56);
             this.txtInfo.TabIndex = 9;
+            // 
+            // lblIP
+            // 
+            this.lblIP.AutoSize = true;
+            this.lblIP.Location = new System.Drawing.Point(277, 70);
+            this.lblIP.Name = "lblIP";
+            this.lblIP.Size = new System.Drawing.Size(23, 13);
+            this.lblIP.TabIndex = 10;
+            this.lblIP.Text = "IP: ";
             // 
             // WizPageHost
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.lblIP);
             this.Controls.Add(this.txtInfo);
             this.Controls.Add(this.btnCopy);
             this.Controls.Add(this.numPlayers);
@@ -143,5 +159,6 @@
         private System.Windows.Forms.NumericUpDown numPlayers;
         private System.Windows.Forms.Button btnCopy;
         private System.Windows.Forms.TextBox txtInfo;
+        private System.Windows.Forms.Label lblIP;
     }
 }

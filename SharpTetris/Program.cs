@@ -33,6 +33,7 @@ namespace Net.SamuelChen.Tetris {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 #endif
 
+            GameSetting.Instance = new GameSetting();
             GameSetting.Instance.Load("setting.xml");
             GameSetting.Instance.ControllerFactory = ControllerFactory.CreateInstance(EnumControllerFactoryType.DirectX);
             Skins.Instance.Load(GameSetting.Instance.Skin);

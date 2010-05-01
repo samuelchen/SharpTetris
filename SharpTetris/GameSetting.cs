@@ -13,8 +13,8 @@ namespace Net.SamuelChen.Tetris {
     /// The setting service
     /// </summary>
     public class GameSetting : Setting, IDisposable {
-        //public const int	adMaxPlayerNum = 4;			// 最大控制器个数
-        //public const int	adDefaultBlockNum = 4;		// 默认块数常量
+        public const int	DEFAULT_MAX_PLAYERS = 4;
+        public const int	LIMITED_MAX_PLAYERS = 8;
 
         public GameSetting() : base() {
             m_keymaps = new Dictionary<string, Dictionary<string, string>>();
@@ -70,6 +70,26 @@ namespace Net.SamuelChen.Tetris {
         public string Port {
             get { return this.Get("port"); }
             set { this.Set("port", value); }
+        }
+
+        public int MaxPlayers {
+            get {
+                string s = this.Get("max_players");
+                int n = Convert.ToInt32(s);
+                if (n <= 0 || n > LIMITED_MAX_PLAYERS) {
+                    n = DEFAULT_MAX_PLAYERS;
+                    this.Set("max_players", n.ToString());
+                }
+                return n;
+            }
+            set {
+                int n = value;
+                if (n <= 0 || n > LIMITED_MAX_PLAYERS) {
+                    throw new ArgumentOutOfRangeException(string.Format(
+                        "MaxPlayers is out of range (1 - {0}).", LIMITED_MAX_PLAYERS));
+                }
+                this.Set("max_players", n.ToString());
+            }
         }
 
         public ControllerFactory ControllerFactory { get; set; }

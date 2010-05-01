@@ -78,7 +78,7 @@ namespace Net.SamuelChen.Tetris.Network {
             Trace.TraceInformation("Client \"{0}\" disconnected.");
 
             if (null != e.Error) {
-                Trace.TraceWarning("Catched error while disconnecting. \n{0}\n{1}",
+                Trace.TraceWarning("Catched error. \n{0}\n{1}",
                     e.Error.Message, e.Error.StackTrace);
             }
 

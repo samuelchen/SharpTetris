@@ -39,12 +39,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClientGame.cs" />
+    <Compile Include="GameEvents.cs" />
     <Compile Include="GameException.cs" />
     <Compile Include="GameBase.cs" />
     <Compile Include="Enum.cs" />
     <Compile Include="GameFactory.cs" />
-    <Compile Include="HostGame.cs" />
-    <Compile Include="NetworkPlayer.cs" />
+    <Compile Include="Control\InfoPanel.cs">
+    </Compile>
+    <Compile Include="ServerGame.cs" />
     <Compile Include="TetrisGame.cs" />
     <Compile Include="IGame.cs" />
     <Compile Include="LocalGame.cs" />

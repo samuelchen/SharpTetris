@@ -149,9 +149,6 @@ namespace Net.SamuelChen.Tetris.Network {
                 if (null == ri)
                     return;
 
-                if (null != ri.Worker)
-                    return; // already started.
-
                 NetworkEventArgs arg = new NetworkEventArgs(ri,
                      new NetworkContent(EnumNetworkContentType.String, ri.Name, this.Encoding));
 
