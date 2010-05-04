@@ -44,7 +44,7 @@ namespace Net.SamuelChen.Tetris {
             lblIP.Text = string.Format("IP: {0}", m_ip);
             txtPort.Text = m_setting.Port; // default port
             txtName.Text = m_setting.DefaultPlayerName;
-            numPlayers.Minimum = 2;
+            numPlayers.Minimum = 1;
             numPlayers.Maximum = m_setting.MaxPlayers;
         }
 

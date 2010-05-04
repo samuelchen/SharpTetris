@@ -78,7 +78,7 @@
       <string name="wiz_client_prompt">Please input host informations. Request and copy from your host if you don't know.</string>
       <string name="wiz_client_name">Your ^Name:</string>
       <string name="wiz_client_server_port">Server Por^t:</string>
-      <string name="wiz_client_server_ip">Server ^IP Address:</string>
+      <string name="wiz_client_server_ip">Server Name or ^IP:</string>
       <string name="wiz_client_btn_copy">^Paste from clipboard</string>
       <string name="wiz_client_info">
             Server IP       : {0}

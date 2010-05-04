@@ -51,6 +51,7 @@ namespace Net.SamuelChen.Tetris.Network {
                 return null;
 
             NetworkStream ns = client.GetStream();
+            client.NoDelay = true;
             if (null == ns || !ns.CanRead)
                 return null;
 
@@ -66,7 +67,8 @@ namespace Net.SamuelChen.Tetris.Network {
                     ms.Flush();
 
                     if (ms.Length > 0)
-                        data = ms.GetBuffer();
+                        data = ms.ToArray();
+                    ms.Close();
                 }
             } catch (SocketException err) {
 #if DEBUG
@@ -76,7 +78,8 @@ namespace Net.SamuelChen.Tetris.Network {
                     err.Message, err.StackTrace, client.Client.LocalEndPoint.ToString(),  
                     client.Client.RemoteEndPoint.ToString());
             }
-
+            
+            ns = null;
             return data;
         }
 
@@ -85,6 +88,7 @@ namespace Net.SamuelChen.Tetris.Network {
                 return false;
 
             NetworkStream ns = client.GetStream();
+            client.NoDelay = true;
             if (null == ns || !ns.CanWrite)
                 return false;
 

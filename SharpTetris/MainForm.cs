@@ -76,12 +76,14 @@ namespace Net.SamuelChen.Tetris {
         }
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e) {
-            if (null != m_game)
+            if (null != m_game) {
                 m_game.Dispose();
+                m_game = null;
+            }            
         }
 
         private void OnAllMenu_Click(object sender, EventArgs e) {
-            if (null != m_game)
+            if (null != m_game && m_game.Status == EnumGameStatus.Running)
                 m_game.Pause();
         }
 
@@ -134,6 +136,8 @@ namespace Net.SamuelChen.Tetris {
             if (null != m_game)
                 m_game.Dispose();
             ClientGame game = (m_game = GameFactory.CreateGame(EnumGameType.Client) as TetrisGame) as ClientGame;
+            game.Joined += new EventHandler<PlayerEventArgs>(ClientGame_Joined);
+            game.Left += new EventHandler<PlayerEventArgs>(ClientGame_Left);
             game.Container = m_gameContainer;
             game.AddPlayer(player);
             game.Connect("localhost", port);
@@ -164,6 +168,12 @@ namespace Net.SamuelChen.Tetris {
             Debug.Assert(info.Length == 6 && players != null && players.Count > 0
                 && !string.IsNullOrEmpty(clientGameInfo));
 
+            if (string.IsNullOrEmpty(info[3]) || string.IsNullOrEmpty(info[5])) {
+                MessageBox.Show("You did not specify the correct host information.",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
             //IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Parse(info[3]), Convert.ToInt32(info[5]));
             Player player = players[0]; // first player as local player
             this.InitPlayer(player);
@@ -173,6 +183,8 @@ namespace Net.SamuelChen.Tetris {
             ClientGame game = (m_game = GameFactory.CreateGame(EnumGameType.Client) as TetrisGame) as ClientGame;
             game.Container = m_gameContainer;
             game.AddPlayer(player);
+            game.Joined += new EventHandler<PlayerEventArgs>(ClientGame_Joined);
+            game.Left += new EventHandler<PlayerEventArgs>(ClientGame_Left);
             //game.Connect(serverEndPoint);
             game.Connect(info[3], Convert.ToInt32(info[5]));
 
@@ -216,7 +228,7 @@ namespace Net.SamuelChen.Tetris {
                 info = m_networkGameInfoPanel;
                 info.Width = panel.Right - padX;
                 info.Height = 100;
-                info.Show(padX, panel.Bottom + padY + 20);
+                info.Show(padX, panel.Bottom + padY);
 
                 this.Height = info.Bottom + padY + 20;
                 this.Width = info.Right + padX + 10;
@@ -237,7 +249,7 @@ namespace Net.SamuelChen.Tetris {
 
         #endregion
 
-        #region Game Events
+        #region Server Game Events
 
         void ServerGame_PlayerLeaved(object sender, PlayerEventArgs e) {
             throw new NotImplementedException();
@@ -245,9 +257,43 @@ namespace Net.SamuelChen.Tetris {
 
         void ServerGame_PlayerJoined(object sender, PlayerEventArgs e) {
             Player player = e.Player;
-            m_networkGameInfoPanel.AddString("info", "Player " + player.Name + " joined.", new Font("MSYH", 8), Brushes.CadetBlue, 5, 5, 0, 0);
+            //TODO: uses skin
+            m_networkGameInfoPanel.SetString("info", string.Format(
+                "Player {0} joined. Waiting for rest client players ({1}/{2}) ...", 
+                    player.Name, m_serverGame.Players.Count, m_serverGame.MaxPlayers),
+                new Font("MSYH", 8), Brushes.CadetBlue, 5, 5, 0, 0);
             if (m_serverGame.Players.Count == m_serverGame.MaxPlayers)
                 m_serverGame.Start();
+            this.Refresh();
+        }
+
+        #endregion
+
+        #region Client Game Events
+
+        void ClientGame_Joined(object sender, PlayerEventArgs e) {
+            ClientGame game = m_game as ClientGame; //sender as ClientGame;
+            Player player = e.Player;
+            if (null == game || null == player || null == player.InfoPanel)
+                return;
+            //TODO: uses skin
+            player.InfoPanel.SetString("info", "You have joined the game. Waiting for other players...",
+                 new Font("MSYH", 8), Brushes.Gray, 5, player.InfoPanel.Height - 20, 0, 0);
+            this.Refresh();
+        }
+
+        void ClientGame_Left(object sender, PlayerEventArgs e) {
+            ClientGame game = m_game as ClientGame; //sender as ClientGame;
+            Player player = e.Player;
+            if (null == game || null == player || null == player.InfoPanel)
+                return;
+            //TODO: uses skin
+            player.InfoPanel.SetString("info", "You have left the game.",
+                 new Font("MSYH", 8), Brushes.Gray, 5, player.InfoPanel.Height - 20, 0, 0);
+            this.Refresh();
+            game.Stop();
+            game.Dispose();
+            game = null;
         }
 
         #endregion
@@ -273,9 +319,9 @@ namespace Net.SamuelChen.Tetris {
             player.InfoPanel = new InfoPanel(m_gameContainer);
             player.InfoPanel.Width = player.PlayFiled.Width;
             player.InfoPanel.Height = 100;
-            player.InfoPanel.AddString("name", player.Name, 
-                new Font(FontFamily.GenericSansSerif, 8), 
-                Brushes.Gray, 0, 0, 0, 0);
+            player.InfoPanel.AddString("name", player.Name,
+                new Font(FontFamily.GenericSansSerif, 8),
+                Brushes.Gray, 5, 5, 0, 0);
         }
         #endregion
 

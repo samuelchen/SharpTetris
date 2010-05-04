@@ -97,7 +97,6 @@ namespace Net.SamuelChen.Tetris.Game {
             //this.GetReady();
             if (null != m_timer)
                 m_timer.Interval = 3000;
-
         }
 
 
@@ -128,7 +127,7 @@ namespace Net.SamuelChen.Tetris.Game {
                 panel.CreateNextShape();
                 panel.RePaint();
 
-                ctrlr.Pressed += new ControllerPressHandler(Controller_Pressed);
+                ctrlr.Pressed += new ControllerPressHandler(OnController_Pressed);
                 ctrlr.Attach(player.PlayFiled.FindForm());
                 if (ctrlr.Attached) {
                     ctrlr.Start();
@@ -201,7 +200,7 @@ namespace Net.SamuelChen.Tetris.Game {
 
         #region events
 
-        void Controller_Pressed(object sender, ControllerPressedEventArgs e) {
+        protected virtual void OnController_Pressed(object sender, ControllerPressedEventArgs e) {
             if (this.Status != EnumGameStatus.Running)
                 return;
 

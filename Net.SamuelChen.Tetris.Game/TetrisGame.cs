@@ -44,11 +44,11 @@ namespace Net.SamuelChen.Tetris.Game {
 
 
         public override void Start() {
-            base.Start();
             Start(1);
         }
 
         public virtual void Start(int level) {
+            base.Start();
             if (level < 1)
                 Level = 1;
             else

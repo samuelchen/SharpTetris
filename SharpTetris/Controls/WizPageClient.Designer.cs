@@ -76,9 +76,9 @@
             this.lblIP.AutoSize = true;
             this.lblIP.Location = new System.Drawing.Point(50, 70);
             this.lblIP.Name = "lblIP";
-            this.lblIP.Size = new System.Drawing.Size(86, 13);
+            this.lblIP.Size = new System.Drawing.Size(88, 13);
             this.lblIP.TabIndex = 0;
-            this.lblIP.Text = "Host IP Address:";
+            this.lblIP.Text = "Host Name or IP:";
             // 
             // lblPrompt
             // 

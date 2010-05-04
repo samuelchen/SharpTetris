@@ -40,6 +40,8 @@ namespace Net.SamuelChen.Tetris.Network {
 
         public bool IsConnected { get; protected set; }
 
+        public string ErrorMessage { get; protected set; }
+
         #endregion
 
         #region IClient Members
@@ -62,6 +64,8 @@ namespace Net.SamuelChen.Tetris.Network {
             if (null != m_worker || null != m_client || null == serverEndPoint)
                 return;
 
+            this.ErrorMessage = null;
+
             m_worker = new BackgroundWorker();
             m_worker.DoWork += new DoWorkEventHandler(Client_DoWork);
             m_worker.ProgressChanged += new ProgressChangedEventHandler(Client_ProgressChanged);
@@ -78,8 +82,21 @@ namespace Net.SamuelChen.Tetris.Network {
             Trace.TraceInformation("Client \"{0}\" disconnected.");
 
             if (null != e.Error) {
-                Trace.TraceWarning("Catched error. \n{0}\n{1}",
-                    e.Error.Message, e.Error.StackTrace);
+                SocketException err = e.Error as SocketException;
+                
+                if (null != err) {
+                    this.ErrorMessage = err.Message;
+                    switch ((SocketError) err.ErrorCode) {
+                        case SocketError.ConnectionRefused:
+                            break;
+                        case SocketError.TimedOut:
+                            break;
+                        default:
+                            break;
+                    }
+                } else
+                    Trace.TraceWarning("Catched error. \n{0}\n{1}",
+                        e.Error.Message, e.Error.StackTrace);
             }
 
             this.IsConnected = false;
@@ -105,12 +122,14 @@ namespace Net.SamuelChen.Tetris.Network {
                 if (null == content)
                     return;
 
-                bool succeed = true; // Assume HostDataValidation == null
-                if (null != this.ServerDataValidating)
-                    succeed = this.ServerDataValidating(content);
+                lock (content) {
+                    bool succeed = true; // Assume HostDataValidation == null
+                    if (null != this.ServerDataValidating)
+                        succeed = this.ServerDataValidating(content);
 
-                if (succeed && null != this.ServerCalled)
-                    this.ServerCalled(this, new NetworkEventArgs(null, content));
+                    if (succeed && null != this.ServerCalled)
+                        this.ServerCalled(this, new NetworkEventArgs(null, content));
+                }
             }
         }
 
@@ -154,7 +173,7 @@ namespace Net.SamuelChen.Tetris.Network {
 #if DEBUG
                 throw err;
 #endif
-                Trace.TraceError("Client socket error \n{0}\n{1}", err.Message, err.StackTrace);
+                Trace.TraceError("Client socket error \n{0}\n{1}", err.ErrorCode, err);
             } finally {
                 client.Close();
             }
@@ -162,6 +181,8 @@ namespace Net.SamuelChen.Tetris.Network {
         #endregion
 
         public void Disconnect() {
+            this.ErrorMessage = null;
+
             if (null != m_client)
                 m_client.Close();
             m_client = null;
@@ -174,6 +195,8 @@ namespace Net.SamuelChen.Tetris.Network {
         public bool CallServer(NetworkContent content) {
             if (null == m_client || null == content)
                 return false;
+
+            this.ErrorMessage = null;
 
             return Host.SendData(m_client, content.GetBinary());
         }

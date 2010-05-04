@@ -107,7 +107,10 @@ namespace Net.SamuelChen.Tetris.Game {
         }
 
         public void CallClient(string name, string command) {
-            m_server.CallClient(name, new NetworkContent(EnumNetworkContentType.String, command));
+            NetworkContent content = new NetworkContent(EnumNetworkContentType.String, command);
+            m_server.CallClient(name, content);
+            content = null;
+
         }
 
         public void CallClients(string command) {
@@ -130,8 +133,8 @@ namespace Net.SamuelChen.Tetris.Game {
         /// New game
         /// </summary>
         public override void New() {
-            this.CallClients("NEW");
             base.New();
+            this.CallClients("(NEW)");
             m_timer.Interval = 3000;
 
         }
@@ -142,13 +145,13 @@ namespace Net.SamuelChen.Tetris.Game {
         /// <param name="nLevel">start level</param>
         /// <returns></returns>
         public override void Start(int level) {
-            this.CallClients(string.Format("START,{0}", level));
             base.Start(level);
+            this.CallClients(string.Format("(START,{0})", level));
+            m_timer.Interval = 3000 - level * 100;
             m_timer.Start();
         }
 
         public override void Start() {
-            base.Start();
             this.Start(0);
         }
 
@@ -156,8 +159,8 @@ namespace Net.SamuelChen.Tetris.Game {
         /// Game over
         /// </summary>
         public override void Stop() {
-            this.CallClients("STOP");
             base.Stop();
+            this.CallClients("(STOP)");
             m_timer.Stop();
             m_server.Stop();
         }
@@ -166,8 +169,8 @@ namespace Net.SamuelChen.Tetris.Game {
         /// Pause
         /// </summary>
         public override void Pause() {
-            this.CallClients("PAUSE");
             m_timer.Stop();
+            this.CallClients("(PAUSE)");
             base.Pause();
         }
 
@@ -176,7 +179,7 @@ namespace Net.SamuelChen.Tetris.Game {
         /// </summary>
         public override void Resume() {
             base.Resume();
-            this.CallClients("RESUME");
+            this.CallClients("(RESUME)");
             m_timer.Start();
         }
 
@@ -194,7 +197,7 @@ namespace Net.SamuelChen.Tetris.Game {
                 //m_server.CallClient(player.HostName, new NetworkContent(EnumNetworkContentType.String, "GETACTION"));
 
                 // move shape
-                m_server.Boardcast(new NetworkContent(EnumNetworkContentType.String, "GO"));
+                m_server.Boardcast(new NetworkContent(EnumNetworkContentType.String, "(GO)"));
 
                 //TODO: score and level
             }

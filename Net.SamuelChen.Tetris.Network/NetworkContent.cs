@@ -58,7 +58,7 @@ namespace Net.SamuelChen.Tetris.Network {
                     break;
             }
 
-            return this.Data as string;
+            return null;
         }
 
         public byte[] GetBinary() {
@@ -72,7 +72,7 @@ namespace Net.SamuelChen.Tetris.Network {
                 default:
                     break;
             }
-            return this.Data as byte[];
+            return null;
         }
 
 
