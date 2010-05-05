@@ -83,7 +83,7 @@
             // txtPort
             // 
             this.txtPort.Location = new System.Drawing.Point(170, 67);
-            this.txtPort.Mask = "0000";
+            this.txtPort.Mask = "00000";
             this.txtPort.Name = "txtPort";
             this.txtPort.Size = new System.Drawing.Size(100, 20);
             this.txtPort.TabIndex = 1;
