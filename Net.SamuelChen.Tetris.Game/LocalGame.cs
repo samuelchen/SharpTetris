@@ -165,6 +165,9 @@ namespace Net.SamuelChen.Tetris.Game {
         /// Pause
         /// </summary>
         public override void Pause() {
+            if (this.Status != EnumGameStatus.Running)
+                return;
+
             if (null != m_timer)
                 m_timer.Stop();
             base.Pause();
