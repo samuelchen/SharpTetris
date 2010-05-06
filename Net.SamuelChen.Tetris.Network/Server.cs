@@ -196,6 +196,7 @@ namespace Net.SamuelChen.Tetris.Network {
                 return;
             }
 
+            endpoint.Address = IPAddress.Any;
             TcpListener lisenter = new TcpListener(endpoint);
             try {
                 byte[] buf = new byte[256];

@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using Net.SamuelChen.Tetris.Skin;
 using Net.SamuelChen.Tetris.Game;
 using System.Text.RegularExpressions;
+using System.Net;
 
 namespace Net.SamuelChen.Tetris {
     public partial class WizPageClient : UserControl, IWizardPage {
@@ -77,7 +78,7 @@ namespace Net.SamuelChen.Tetris {
 
         private void txtHostPort_Validating(object sender, CancelEventArgs e) {
             int port = Convert.ToInt32(txtHostPort.Text);
-            if (port < 1 || port > 65535) {
+            if (port < IPEndPoint.MinPort || port > IPEndPoint.MaxPort) {
                 txtInfo.Text = string.Format(m_skin.GetString("err_invalid_port"), txtHostPort.Text);
                 e.Cancel = true;
             }

@@ -44,7 +44,7 @@ namespace Net.SamuelChen.Tetris {
             lblIP.Text = string.Format("IP: {0}", m_ip);
             txtPort.Text = m_setting.Port; // default port
             txtName.Text = m_setting.DefaultPlayerName;
-            numPlayers.Minimum = 1;
+            numPlayers.Minimum = 2;
             numPlayers.Maximum = m_setting.MaxPlayers;
         }
 
@@ -93,7 +93,7 @@ namespace Net.SamuelChen.Tetris {
 
         private void txtPort_Validating(object sender, CancelEventArgs e) {
             int port = Convert.ToInt32(txtPort.Text);
-            if (port < 1 || port > 65535) {
+            if (port < IPEndPoint.MinPort || port > IPEndPoint.MaxPort) {
                 txtInfo.Text = string.Format(m_skin.GetString("err_invalid_port"), txtPort.Text);
                 e.Cancel = true;
             } else {

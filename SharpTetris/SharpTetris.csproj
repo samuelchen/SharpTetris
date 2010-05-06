@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{DF1AE0AC-21B7-414C-B275-C97B934D5E79}</ProjectGuid>
     <OutputType>WinExe</OutputType>
@@ -12,7 +12,8 @@
     <AssemblyName>#Tetris</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <ApplicationIcon>SharpTetris.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
     <PublishUrl>http://localhost/#Tetris/</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
@@ -72,12 +73,6 @@
     <Compile Include="Controls\IWizard.cs" />
     <Compile Include="Controls\IWizardPage.cs" />
     <Compile Include="GameSetting.cs" />
-    <Compile Include="Test\NetworkTest.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Test\NetworkTest.Designer.cs">
-      <DependentUpon>NetworkTest.cs</DependentUpon>
-    </Compile>
     <Compile Include="NewGameForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -101,12 +96,6 @@
     </Compile>
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Test\PlayPanelTest.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Test\PlayPanelTest.Designer.cs">
-      <DependentUpon>PlayPanelTest.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -138,10 +127,6 @@
       <DependentUpon>WizPageSummary.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Test\NetworkTest.resx">
-      <DependentUpon>NetworkTest.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="NewGameForm.resx">
       <DependentUpon>NewGameForm.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -152,14 +137,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Test\PlayPanelTest.resx">
-      <DependentUpon>PlayPanelTest.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WaitForClientForm.resx">
-      <DependentUpon>WaitForClientForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <Compile Include="Controls\WizPageMultiPlayer.cs">
@@ -185,12 +162,6 @@
     </Compile>
     <Compile Include="Controls\WizPageHost.Designer.cs">
       <DependentUpon>WizPageHost.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WaitForClientForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="WaitForClientForm.Designer.cs">
-      <DependentUpon>WaitForClientForm.cs</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -223,43 +194,6 @@
     <Content Include="setting.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SharpTetris.ico" />
-    <Content Include="skin\web20\blockBlank.bmp">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="skin\web20\blockBomb.bmp">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="skin\web20\blockNormal.bmp">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="skin\web20\blockRoadblock.bmp">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="skin\web20\blocks.bmp">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="skin\web20\blockWall.bmp">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="skin\web20\delicious.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="skin\web20\dopplr.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="skin\web20\flickr.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="skin\web20\leaf.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="skin\web20\messenger.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="skin\web20\skin.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="skin\default\blockBlank.bmp">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -279,15 +213,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="skin\default\skin.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="skin\web20\skype.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="skin\web20\twitter.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="skin\web20\website.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

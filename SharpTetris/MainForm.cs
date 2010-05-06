@@ -141,6 +141,7 @@ namespace Net.SamuelChen.Tetris {
             game.Container = m_gameContainer;
             game.AddPlayer(player);
             game.Connect("localhost", port);
+            //game.Connect(Dns.GetHostName(), port);
 
             this.Refresh();
 
