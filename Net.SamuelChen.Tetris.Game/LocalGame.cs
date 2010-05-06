@@ -120,17 +120,18 @@ namespace Net.SamuelChen.Tetris.Game {
             foreach (Player player in this.Players.Values) {
                 PlayPanel panel = player.PlayFiled;
                 IController ctrlr = player.Controller;
-                if (null == panel || null == ctrlr)
-                    continue;
+                if (null != panel) {
+                    panel.Status = EnumGameStatus.Running;
+                    panel.CreateNextShape();
+                    panel.RePaint();
+                }
 
-                panel.Status = EnumGameStatus.Running;
-                panel.CreateNextShape();
-                panel.RePaint();
-
-                ctrlr.Pressed += new ControllerPressHandler(OnController_Pressed);
-                ctrlr.Attach(player.PlayFiled.FindForm());
-                if (ctrlr.Attached) {
-                    ctrlr.Start();
+                if (null != ctrlr) {
+                    ctrlr.Pressed += new ControllerPressHandler(OnController_Pressed);
+                    ctrlr.Attach(player.PlayFiled.FindForm());
+                    if (ctrlr.Attached) {
+                        ctrlr.Start();
+                    }
                 }
             }
             if (null != m_timer)
@@ -200,7 +201,6 @@ namespace Net.SamuelChen.Tetris.Game {
 
         #endregion
 
-
         #region events
 
         protected virtual void OnController_Pressed(object sender, ControllerPressedEventArgs e) {
@@ -242,7 +242,6 @@ namespace Net.SamuelChen.Tetris.Game {
         }
 
         #endregion
-
 
         #region IDisposable Members
         private bool _disposed = false;

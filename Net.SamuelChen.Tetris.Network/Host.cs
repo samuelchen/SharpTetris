@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.IO;
 using System.Diagnostics;
+using System;
 
 namespace Net.SamuelChen.Tetris.Network {
     public class Host {
@@ -77,6 +78,7 @@ namespace Net.SamuelChen.Tetris.Network {
                 Trace.TraceError("\"{2}\" fails to receive data from \"{3}\". \n{0}\n{1}",
                     err.Message, err.StackTrace, client.Client.LocalEndPoint.ToString(),  
                     client.Client.RemoteEndPoint.ToString());
+                return null;
             }
             
             ns = null;
@@ -98,9 +100,16 @@ namespace Net.SamuelChen.Tetris.Network {
 #if DEBUG
                 throw err;
 #endif
-                Trace.TraceError("\"{2}\" fails to send data to {3}. \n{0}\n{1}",
-                    err.Message, err.StackTrace, client.Client.LocalEndPoint.ToString(), 
+                Trace.TraceError("\"{1}\" fails to send data to {2}. \n{0}",
+                    err.ToString(), client.Client.LocalEndPoint.ToString(), 
                     client.Client.RemoteEndPoint.ToString());
+
+                return false;
+            } catch (Exception err) {
+                Trace.TraceError("\"{1}\" fails to send data to {2}. \n{0}",
+                    err.ToString(), client.Client.LocalEndPoint.ToString(), 
+                    client.Client.RemoteEndPoint.ToString());
+                return false;
             }
 
             return true;

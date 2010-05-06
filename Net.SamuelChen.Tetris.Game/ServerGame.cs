@@ -114,10 +114,9 @@ namespace Net.SamuelChen.Tetris.Game {
         }
 
         public void CallClients(string command) {
-            m_server.Boardcast(new NetworkContent(EnumNetworkContentType.String, command));
+            m_server.Boardcast(new NetworkContent(EnumNetworkContentType.String,
+                string.Format("(ALL:{0})", command)));
         }
-
-
 
         #region Game Control
 
@@ -134,7 +133,7 @@ namespace Net.SamuelChen.Tetris.Game {
         /// </summary>
         public override void New() {
             base.New();
-            this.CallClients("(NEW)");
+            this.CallClients("NEW");
             m_timer.Interval = 3000;
 
         }
@@ -146,7 +145,7 @@ namespace Net.SamuelChen.Tetris.Game {
         /// <returns></returns>
         public override void Start(int level) {
             base.Start(level);
-            this.CallClients(string.Format("(START,{0})", level));
+            this.CallClients(string.Format("START,{0}", level));
             m_timer.Interval = 3000 - level * 100;
             m_timer.Start();
         }
@@ -160,7 +159,7 @@ namespace Net.SamuelChen.Tetris.Game {
         /// </summary>
         public override void Stop() {
             base.Stop();
-            this.CallClients("(STOP)");
+            this.CallClients("STOP");
             m_timer.Stop();
             m_server.Stop();
         }
@@ -170,7 +169,7 @@ namespace Net.SamuelChen.Tetris.Game {
         /// </summary>
         public override void Pause() {
             m_timer.Stop();
-            this.CallClients("(PAUSE)");
+            this.CallClients("PAUSE");
             base.Pause();
         }
 
@@ -179,7 +178,7 @@ namespace Net.SamuelChen.Tetris.Game {
         /// </summary>
         public override void Resume() {
             base.Resume();
-            this.CallClients("(RESUME)");
+            this.CallClients("RESUME");
             m_timer.Start();
         }
 
@@ -197,7 +196,7 @@ namespace Net.SamuelChen.Tetris.Game {
                 //m_server.CallClient(player.HostName, new NetworkContent(EnumNetworkContentType.String, "GETACTION"));
 
                 // move shape
-                m_server.Boardcast(new NetworkContent(EnumNetworkContentType.String, "(GO)"));
+                this.CallClients("GO");
 
                 //TODO: score and level
             }

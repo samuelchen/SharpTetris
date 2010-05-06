@@ -133,6 +133,7 @@ namespace Net.SamuelChen.Tetris {
             Player player = players[0]; // first player as local player
             this.InitPlayer(player);
             player.Name = info[1];
+            player.HostName = Dns.GetHostName();
             if (null != m_game)
                 m_game.Dispose();
             ClientGame game = (m_game = GameFactory.CreateGame(EnumGameType.Client) as TetrisGame) as ClientGame;
@@ -253,7 +254,11 @@ namespace Net.SamuelChen.Tetris {
         #region Server Game Events
 
         void ServerGame_PlayerLeaved(object sender, PlayerEventArgs e) {
-            throw new NotImplementedException();
+            if (m_serverGame.Players.Count == 1) {
+                m_serverGame.Stop();
+                m_serverGame.CallClients("STOP");
+            }
+            m_serverGame.CallClients("STOP," + e.Player.Name);
         }
 
         void ServerGame_PlayerJoined(object sender, PlayerEventArgs e) {
@@ -263,8 +268,13 @@ namespace Net.SamuelChen.Tetris {
                 "Player {0} joined. Waiting for rest client players ({1}/{2}) ...", 
                     player.Name, m_serverGame.Players.Count, m_serverGame.MaxPlayers),
                 new Font("MSYH", 8), Brushes.CadetBlue, 5, 5, 0, 0);
-            if (m_serverGame.Players.Count == m_serverGame.MaxPlayers)
+            if (m_game.Players.Count < m_serverGame.Players.Count) {
+                this.InitPlayer(player);
+                m_game.AddPlayer(player);
+            }
+            if (m_serverGame.Players.Count == m_serverGame.MaxPlayers) {
                 m_serverGame.Start();
+            }
             this.Refresh();
         }
 
@@ -277,10 +287,10 @@ namespace Net.SamuelChen.Tetris {
             Player player = e.Player;
             if (null == game || null == player || null == player.InfoPanel)
                 return;
+            
             //TODO: uses skin
             player.InfoPanel.SetString("info", "You have joined the game. Waiting for other players...",
                  new Font("MSYH", 8), Brushes.Gray, 5, player.InfoPanel.Height - 20, 0, 0);
-            this.Refresh();
         }
 
         void ClientGame_Left(object sender, PlayerEventArgs e) {
@@ -291,7 +301,6 @@ namespace Net.SamuelChen.Tetris {
             //TODO: uses skin
             player.InfoPanel.SetString("info", "You have left the game.",
                  new Font("MSYH", 8), Brushes.Gray, 5, player.InfoPanel.Height - 20, 0, 0);
-            this.Refresh();
             game.Stop();
             game.Dispose();
             game = null;
@@ -318,6 +327,7 @@ namespace Net.SamuelChen.Tetris {
         private void InitPlayer(Player player) {
             player.PlayFiled = new PlayPanel();
             player.InfoPanel = new InfoPanel(m_gameContainer);
+            player.InfoPanel.AutoRefresh = true;
             player.InfoPanel.Width = player.PlayFiled.Width;
             player.InfoPanel.Height = 100;
             player.InfoPanel.AddString("name", player.Name,

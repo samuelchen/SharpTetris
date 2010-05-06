@@ -95,7 +95,8 @@ namespace Net.SamuelChen.Tetris.Network {
                 return;
 
             foreach (string name in m_clients.Keys) {
-                this.CallClient(name, content);
+                if (!this.CallClient(name, content))
+                    m_clients[name].Worker.CancelAsync();
             }
         }
 

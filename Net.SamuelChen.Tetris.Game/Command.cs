@@ -6,7 +6,7 @@ namespace Net.SamuelChen.Tetris.Game
 {
     public delegate object CommandHandler(params object[] parameters);
 
-    class Command
+    public class Command
     {
         public Command()
         {
@@ -33,7 +33,7 @@ namespace Net.SamuelChen.Tetris.Game
 
     public delegate T CommandHandler<T>(params object[] parameters);
 
-    class Command<TAction, TResult>
+    public class Command<TAction, TResult>
     {
         public Command()
         {
@@ -57,4 +57,5 @@ namespace Net.SamuelChen.Tetris.Game
             return this.Handler(this.Parameters);
         }
     }
+
 }

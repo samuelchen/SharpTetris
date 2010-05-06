@@ -62,7 +62,11 @@ namespace Net.SamuelChen.Tetris.Game {
         }
 
         void OnServerCalled(object sender, NetworkEventArgs e) {
-            this.ExecuteCommand(this.ParseCommand(e.Content));
+            string tmp = e.Content.GetString();
+            string[] commands = tmp.Split(new char[] { '(', ')' }, StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < commands.Length; i++) {
+                this.ExecuteCommand(this.ParseCommand(commands[i]));
+            }
         }
 
         void OnDisconnected(object sender, EventArgs e) {
@@ -98,48 +102,49 @@ namespace Net.SamuelChen.Tetris.Game {
             OnDisconnected(this, new EventArgs());
         }
 
-        protected string[] ParseCommand(NetworkContent data) {
-            string tmp = data.GetString();
-            string[] commands = tmp.Substring(1, tmp.Length - 2).Split(
+        protected string[] ParseCommand(string command) {
+            string[] commands = command.Split(
                 new char[] { ':', ',' }, StringSplitOptions.RemoveEmptyEntries);
             return commands;
         }
 
         public void ExecuteCommand(string[] command) {
             Debug.Assert(null != command && command.Length > 0);
-            if (null == command || command.Length < 1)
+            if (null == command || command.Length < 2)
                 return;
+
+            string name = command[0].Trim();
+            string action = command[1];
              
-            command[0] = command[0].Trim();
-            if (command[0].Equals("GO")) {
+            if (action.Equals("GO")) {
                 this.Go();
-            } else if (command[0].Equals("MOVE")) {
+            } else if (action.Equals("MOVE")) {
                 Debug.Assert(command.Length > 2);
-                this.Move(command[0], command[2]);
-            } else if (command[0].Equals("NEW")) {
+                this.Move(name, command[2]);
+            } else if (action.Equals("NEW")) {
                 this.New();
-            } else if (command[0].Equals("PAUSE")) {
+            } else if (action.Equals("PAUSE")) {
                 this.Pause();
-            } else if (command[0].Equals("RESUME")) {
+            } else if (action.Equals("RESUME")) {
                 this.Resume();
-            } else if (command[0].Equals("STOP")) {
+            } else if (action.Equals("STOP")) {
                 this.Stop();
-            } else if (command[0].Equals("START")) {
+            } else if (action.Equals("START")) {
                 int lv = 0;
-                if (command.Length == 2)
-                    lv = Convert.ToInt32(command[1]);
+                if (command.Length == 3)
+                    lv = Convert.ToInt32(command[2]);
                 this.Start(lv);
-            } else if (command[0].Equals("PLAYER")) {
-                if (command.Length == 2)
-                    this.HostGetPlayerName(command[1]);
+            } else if (action.Equals("PLAYER")) {
+                if (command.Length == 3)
+                    this.HostGetPlayerName(name);
                 else if (command.Length == 3)
-                    this.HostSetPlayerName(command[1], command[2]);
-            } else if (command[0].Equals("CLIENT")) {
+                    this.HostSetPlayerName(name, command[2]);
+            } else if (action.Equals("CLIENT")) {
                 if (command.Length == 2)
-                    this.HostGetClientName(command[1]);
+                    this.HostGetClientName(name);
                 else
-                    this.HostSetClientName(command[1], command[2]);
-            } else if (command[0].StartsWith("CTRL")) {
+                    this.HostSetClientName(name, command[2]);
+            } else if (action.StartsWith("CTRL")) {
             }
 
         }
@@ -222,21 +227,26 @@ namespace Net.SamuelChen.Tetris.Game {
         //}
 
         protected override void OnController_Pressed(object sender, Net.SamuelChen.Tetris.Controller.ControllerPressedEventArgs e) {
-            this.CallServer("MOVE," + m_player.Controller.Translate(e.Keys[0]));
+            string act = m_player.Controller.Translate(e.Keys[0]);
+            if (!string.IsNullOrEmpty(act)) {
+                this.CallServer("MOVE," + act);
+            }
             base.OnController_Pressed(sender, e);
         }
 
         public override void AddPlayer(Player player) {
             if (null == player)
                 return;
-            
+
             base.AddPlayer(player);
-            m_player = player;
+            if (this.Players.Count == 1)
+                m_player = player;
         }
 
         public override void RemovePlayer(Player player) {
+            if (this.Players.Count == 1)
+                m_player = null;                        
             base.RemovePlayer(player);
-            m_player = null;
         }
 
         #endregion
@@ -249,6 +259,7 @@ namespace Net.SamuelChen.Tetris.Game {
             if (_disposed)
                 return;
 
+            m_player = null;
             base.Dispose();
             _disposed = true;
         }
