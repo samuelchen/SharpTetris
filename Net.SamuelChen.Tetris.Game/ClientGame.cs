@@ -174,8 +174,15 @@ namespace Net.SamuelChen.Tetris.Game {
             }             
         }
 
-        public void Move(string playerName, string enumMoving) {
+        public void Move(string playerName, string moving) {
             Debug.Assert(!string.IsNullOrEmpty(playerName));
+            Debug.Assert(!string.IsNullOrEmpty(moving));
+            
+            moving = moving.ToUpper();
+            object enumMoving = null;
+            if (!GameBase.ActionMapping.TryGetValue(moving, out enumMoving)
+                || null == enumMoving)
+                return;
 
             playerName = playerName.Trim();
             if (playerName.Equals("ALL")) {
@@ -184,7 +191,8 @@ namespace Net.SamuelChen.Tetris.Game {
             } else {
                 Player player = null;
                 if (this.Players.TryGetValue(playerName, out player)) {
-                    player.PlayFiled.Go(enumMoving);
+                    if (player != m_player)
+                        player.PlayFiled.Go(enumMoving);
                 }
             }
         }

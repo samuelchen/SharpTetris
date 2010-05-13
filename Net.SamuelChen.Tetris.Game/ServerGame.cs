@@ -92,7 +92,7 @@ namespace Net.SamuelChen.Tetris.Game {
             if (null == e.Content)
                 return;
 
-            this.CallClients(e.Content.GetString());
+            this.DispatchCommand(e.Content);
             
         }
 
@@ -107,7 +107,8 @@ namespace Net.SamuelChen.Tetris.Game {
         }
 
         public void CallClient(string name, string command) {
-            NetworkContent content = new NetworkContent(EnumNetworkContentType.String, command);
+            NetworkContent content = new NetworkContent(EnumNetworkContentType.String, 
+                string.Format("({0}:{1})", name.ToUpper(), command.ToUpper()));
             m_server.CallClient(name, content);
             content = null;
 
@@ -116,6 +117,11 @@ namespace Net.SamuelChen.Tetris.Game {
         public void CallClients(string command) {
             m_server.Boardcast(new NetworkContent(EnumNetworkContentType.String,
                 string.Format("(ALL:{0})", command)));
+        }
+
+        public void DispatchCommand(NetworkContent content)
+        {
+            m_server.Boardcast(content);
         }
 
         #region Game Control
@@ -187,7 +193,6 @@ namespace Net.SamuelChen.Tetris.Game {
         //}
 
         #endregion
-
 
         #region events
 
