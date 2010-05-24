@@ -74,6 +74,10 @@ namespace Net.SamuelChen.Tetris.Game {
 
             if (null != this.PlayerJoined)
                 this.PlayerJoined(this, new PlayerEventArgs(player));
+
+            NetworkContent content = this.CallClient(player.HostName, "NAME");
+            string[] tmp = content.GetString().Split(new char[] { ':' });
+            player.Name = tmp[0];
         }
 
         void OnClientDisconnected(object sender, NetworkEventArgs e) {
@@ -106,17 +110,45 @@ namespace Net.SamuelChen.Tetris.Game {
             return null;
         }
 
-        public void CallClient(string name, string command) {
+        public NetworkContent CallClient(string hostname, string command)
+        {
+            Player player = GetPlayerByHostName(hostname);
+            Debug.Assert(null != player);
+            if (null == player)
+                return null;
+
+            NetworkContent content = new NetworkContent(EnumNetworkContentType.String,
+                string.Format("({0}:{1})", player.Name.ToUpper(), command.ToUpper()));
+            return m_server.CallClient(hostname, content);
+        }
+
+        public void NotifyClient(string hostname, string command) {
+            Player player = GetPlayerByHostName(hostname);
+            Debug.Assert(null != player);
+            if (null == player)
+                return;
             NetworkContent content = new NetworkContent(EnumNetworkContentType.String, 
-                string.Format("({0}:{1})", name.ToUpper(), command.ToUpper()));
-            m_server.CallClient(name, content);
+                string.Format("({0}:{1})", player.Name.ToUpper(), command.ToUpper()));
+            m_server.NotifyClient(hostname, content);
             content = null;
 
         }
 
-        public void CallClients(string command) {
+        public void NotifyClients(string command) {
+            this.NotifyClients("ALL", command);
+        }
+
+        public void NotifyClients(string hostname, string command) {
+            Debug.Assert(!string.IsNullOrEmpty(hostname) && !string.IsNullOrEmpty(command));
+            if (string.IsNullOrEmpty(hostname) || string.IsNullOrEmpty(command))
+                return;
+
+            Player player = GetPlayerByHostName(hostname);
+            Debug.Assert(null != player);
+            if (null == player)
+                return;
             m_server.Boardcast(new NetworkContent(EnumNetworkContentType.String,
-                string.Format("(ALL:{0})", command)));
+                string.Format("({0}:{1})", player.Name.ToUpper(), command.ToUpper())));
         }
 
         public void DispatchCommand(NetworkContent content)
@@ -139,7 +171,7 @@ namespace Net.SamuelChen.Tetris.Game {
         /// </summary>
         public override void New() {
             base.New();
-            this.CallClients("NEW");
+            this.NotifyClients("NEW");
             m_timer.Interval = 3000;
 
         }
@@ -151,7 +183,7 @@ namespace Net.SamuelChen.Tetris.Game {
         /// <returns></returns>
         public override void Start(int level) {
             base.Start(level);
-            this.CallClients(string.Format("START,{0}", level));
+            this.NotifyClients(string.Format("START,{0}", level));
             m_timer.Interval = 3000 - level * 100;
             m_timer.Start();
         }
@@ -165,7 +197,7 @@ namespace Net.SamuelChen.Tetris.Game {
         /// </summary>
         public override void Stop() {
             base.Stop();
-            this.CallClients("STOP");
+            this.NotifyClients("STOP");
             m_timer.Stop();
             m_server.Stop();
         }
@@ -175,7 +207,7 @@ namespace Net.SamuelChen.Tetris.Game {
         /// </summary>
         public override void Pause() {
             m_timer.Stop();
-            this.CallClients("PAUSE");
+            this.NotifyClients("PAUSE");
             base.Pause();
         }
 
@@ -184,7 +216,7 @@ namespace Net.SamuelChen.Tetris.Game {
         /// </summary>
         public override void Resume() {
             base.Resume();
-            this.CallClients("RESUME");
+            this.NotifyClients("RESUME");
             m_timer.Start();
         }
 
@@ -201,7 +233,7 @@ namespace Net.SamuelChen.Tetris.Game {
                 //m_server.CallClient(player.HostName, new NetworkContent(EnumNetworkContentType.String, "GETACTION"));
 
                 // move shape
-                this.CallClients("GO");
+                this.NotifyClients("GO");
 
                 //TODO: score and level
             }

@@ -32,6 +32,7 @@ namespace Net.SamuelChen.Tetris.Network {
         }
 
         protected virtual void Init() {
+            this.Timeout = 15000; // default is 15 seconds.
         }
 
         #endregion
@@ -41,6 +42,7 @@ namespace Net.SamuelChen.Tetris.Network {
         public IPEndPoint LocalEndPoint { get; set; }
         public Encoding Encoding { get; protected set; }
         public string Name { get; set; }
+        public int Timeout { get; set; }
 
         #endregion
 
@@ -114,6 +116,57 @@ namespace Net.SamuelChen.Tetris.Network {
 
             return true;
 
+        }
+
+        public static bool SendAndReceive(TcpClient client, byte[] data, out byte[] ret) {
+            ret = null;
+            if (null == client || !client.Connected || null == data)
+                return false;
+
+            NetworkStream ns = client.GetStream();
+            client.NoDelay = true;
+            if (null == ns || !ns.CanWrite)
+                return false;
+
+            byte[] buf = new byte[256];
+            try
+            {
+                ns.Write(data, 0, data.Length);
+                using (MemoryStream ms = new MemoryStream())
+                {
+
+                    int n = 0;
+                    while (ns.DataAvailable && (n = ns.Read(buf, 0, buf.Length)) != 0)
+                    {
+                        ms.Write(buf, 0, n);
+                    }
+                    ms.Flush();
+
+                    if (ms.Length > 0)
+                        ret = ms.ToArray();
+                    ms.Close();
+                }
+            }
+            catch (SocketException err)
+            {
+#if DEBUG
+                throw err;
+#endif
+                Trace.TraceError("\"{1}\" fails to send data to {2}. \n{0}",
+                    err.ToString(), client.Client.LocalEndPoint.ToString(),
+                    client.Client.RemoteEndPoint.ToString());
+
+                return false;
+            }
+            catch (Exception err)
+            {
+                Trace.TraceError("\"{1}\" fails to send data to {2}. \n{0}",
+                    err.ToString(), client.Client.LocalEndPoint.ToString(),
+                    client.Client.RemoteEndPoint.ToString());
+                return false;
+            }
+
+            return true;
         }
 
         #endregion

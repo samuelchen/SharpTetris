@@ -142,6 +142,7 @@ namespace Net.SamuelChen.Tetris.Network {
             }
 
             TcpClient client = new TcpClient();
+            client.SendTimeout = client.ReceiveTimeout = this.Timeout;
             try {
                 
                 client.Connect(hostEndPoint);
@@ -192,13 +193,38 @@ namespace Net.SamuelChen.Tetris.Network {
             m_worker = null;
         }
 
-        public bool CallServer(NetworkContent content) {
+
+        /// <summary>
+        /// Send data to server without waiting return
+        /// </summary>
+        /// <param name="content">the data to send</param>
+        /// <returns></returns>
+        public bool NotifyServer(NetworkContent content) {
             if (null == m_client || null == content)
                 return false;
 
             this.ErrorMessage = null;
 
             return Host.SendData(m_client, content.GetBinary());
+        }
+
+        /// <summary>
+        /// Send data to server and wait for return
+        /// </summary>
+        /// <param name="content">data to send</param>
+        /// <returns></returns>
+        public NetworkContent CallServer(NetworkContent content)
+        {
+            if (null == m_client || null == content)
+                return null;
+
+            this.ErrorMessage = null;
+
+            byte[] data = null;
+            NetworkContent rc = null;
+            if (Host.SendAndReceive(m_client, content.GetBinary(), out data))
+                rc = new NetworkContent(EnumNetworkContentType.Bianary, data, this.Encoding);
+            return rc;
         }
 
         #endregion

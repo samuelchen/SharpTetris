@@ -42,7 +42,7 @@ namespace Net.SamuelChen.Tetris.Network {
         #region Properties
 
         public int MaxConnections { get; set; }
-        public int Connections {
+        public int ClientCount {
             get {
                 return m_clients.Count;
             }
@@ -95,12 +95,18 @@ namespace Net.SamuelChen.Tetris.Network {
                 return;
 
             foreach (string name in m_clients.Keys) {
-                if (!this.CallClient(name, content))
+                if (!this.NotifyClient(name, content))
                     m_clients[name].Worker.CancelAsync();
             }
         }
 
-        public bool CallClient(string name, NetworkContent content) {
+        /// <summary>
+        /// Call client without waiting for return
+        /// </summary>
+        /// <param name="name">client name</param>
+        /// <param name="content">data to send</param>
+        /// <returns></returns>
+        public bool NotifyClient(string name, NetworkContent content) {
             if (string.IsNullOrEmpty(name) || null == content)
                 return false;
 
@@ -108,14 +114,56 @@ namespace Net.SamuelChen.Tetris.Network {
             if (!m_clients.TryGetValue(name, out ri))
                 return false;
 
-            return this.CallClient(ri, content);
+            return this.NotifyClient(ri, content);
         }
 
-        public bool CallClient(RemoteInformation ri, NetworkContent content) {
+        /// <summary>
+        /// Call client without waiting for return
+        /// </summary>
+        /// <param name="ri">client information</param>
+        /// <param name="content">data to send</param>
+        /// <returns></returns>
+        public bool NotifyClient(RemoteInformation ri, NetworkContent content) {
             if (null == ri || null == content)
                 return false;
 
             return Host.SendData(ri.Connection, content.GetBinary());
+        }
+
+        /// <summary>
+        /// Call client and wait for return
+        /// </summary>
+        /// <param name="name">client name</param>
+        /// <param name="content">the data to send</param>
+        /// <returns></returns>
+        public NetworkContent CallClient(string name, NetworkContent content)
+        {
+            if (string.IsNullOrEmpty(name) || null == content)
+                return null;
+
+            RemoteInformation ri = null;
+            if (!m_clients.TryGetValue(name, out ri))
+                return null;
+
+            return this.CallClient(ri, content);
+        }
+
+        /// <summary>
+        /// Call client and wait for return
+        /// </summary>
+        /// <param name="ri">client information</param>
+        /// <param name="content">the data to send</param>
+        /// <returns></returns>
+        public NetworkContent CallClient(RemoteInformation ri, NetworkContent content)
+        {
+            if (null == ri || null == content)
+                return null;
+
+            byte[] data = null;
+            NetworkContent rc = null;
+            if (Host.SendAndReceive(ri.Connection, content.GetBinary(), out data))
+                rc = new NetworkContent(EnumNetworkContentType.Bianary, data, this.Encoding);
+            return rc;
         }
 
         #endregion
@@ -162,7 +210,7 @@ namespace Net.SamuelChen.Tetris.Network {
                         "BLOCKED: Connection is cancelled by server.").GetBinary());
                     ri.Connection.Close();
 
-                } else if (this.Connections >= this.MaxConnections) {
+                } else if (this.ClientCount >= this.MaxConnections) {
                     Host.SendData(ri.Connection, new NetworkContent(EnumNetworkContentType.String,
                         string.Format("BLOCKED: Reached limitation of max connections (now it's {0}).", 
                         this.MaxConnections)).GetBinary());
@@ -212,6 +260,7 @@ namespace Net.SamuelChen.Tetris.Network {
                     if (lisenter.Pending()) {
 
                         TcpClient client = lisenter.AcceptTcpClient();
+                        client.SendTimeout = client.ReceiveTimeout = this.Timeout;
 
                         if (null != client && client.Connected) {
 

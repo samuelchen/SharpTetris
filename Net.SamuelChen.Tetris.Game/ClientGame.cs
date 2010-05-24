@@ -108,6 +108,26 @@ namespace Net.SamuelChen.Tetris.Game {
             return commands;
         }
 
+        /// <summary>
+        /// Command format (all upper case):
+        /// [player]:[command],[argument]
+        /// 
+        /// player: player name or "ALL".
+        /// Game Command:
+        ///     NEW - prepare a new game and do initlization.
+        ///     START - start the game.
+        ///     PAUSE - pause a game.
+        ///     RESUME - resume a paused game.
+        ///     STOP - Stop a game.
+        ///     QUIT - Quit a game. If server quit, all clients quit too.
+        ///     
+        /// Play Command:
+        ///     GO - Game goes a frame
+        ///     MV - Move a character. argument is the moving direction or action.
+        ///     NAME - Get the player name of this client.
+        ///     RENAME - Rename a player. argument is the new name.
+        /// </summary>
+        /// <param name="command"></param>
         public void ExecuteCommand(string[] command) {
             Debug.Assert(null != command && command.Length > 0);
             if (null == command || command.Length < 2)
@@ -118,7 +138,7 @@ namespace Net.SamuelChen.Tetris.Game {
              
             if (action.Equals("GO")) {
                 this.Go();
-            } else if (action.Equals("MOVE")) {
+            } else if (action.Equals("MV")) {
                 Debug.Assert(command.Length > 2);
                 this.Move(name, command[2]);
             } else if (action.Equals("NEW")) {
@@ -134,11 +154,10 @@ namespace Net.SamuelChen.Tetris.Game {
                 if (command.Length == 3)
                     lv = Convert.ToInt32(command[2]);
                 this.Start(lv);
-            } else if (action.Equals("PLAYER")) {
-                if (command.Length == 3)
-                    this.HostGetPlayerName(name);
-                else if (command.Length == 3)
-                    this.HostSetPlayerName(name, command[2]);
+            } else if (action.Equals("NAME")) {
+                // ignore the target player name
+                this.HostGetPlayerName();
+
             } else if (action.Equals("CLIENT")) {
                 if (command.Length == 2)
                     this.HostGetClientName(name);
@@ -158,7 +177,7 @@ namespace Net.SamuelChen.Tetris.Game {
 
             string command = string.Format("({0}:{1})", m_player.Name, data);
             NetworkContent content = new NetworkContent(EnumNetworkContentType.String, command);
-            m_client.CallServer(content);
+            m_client.NotifyServer(content);
         }
 
         #region Game Action
@@ -210,8 +229,15 @@ namespace Net.SamuelChen.Tetris.Game {
             throw new NotImplementedException();
         }
 
-        private void HostGetPlayerName(string clientName) {
-            throw new NotImplementedException();
+        private void HostGetPlayerName() {
+            Debug.Assert(null != m_player && null != m_client);
+            if (null == m_player || null == m_client)
+                return;
+
+            if (string.IsNullOrEmpty(m_player.Name))
+                m_player.Name = Player.CreateName();
+
+            this.CallServer(m_player.Name);
         }
 
         #endregion

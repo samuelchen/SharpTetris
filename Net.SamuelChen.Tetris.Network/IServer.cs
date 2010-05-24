@@ -26,6 +26,6 @@ namespace Net.SamuelChen.Tetris.Network {
         void Start();
         void Stop();
         void Boardcast(NetworkContent content);
-        bool CallClient(string name, NetworkContent content);
+        bool NotifyClient(string name, NetworkContent content);
     }
 }

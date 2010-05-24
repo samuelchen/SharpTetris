@@ -25,6 +25,7 @@ namespace Net.SamuelChen.Tetris.Network {
         public IPEndPoint EndPoint { get; set; }
         public BackgroundWorker Worker { get; set; }
         public NetworkContent Content { get; set; }
+        public object Tag { get; set; }
 
         public Stream GetStream() {
             if (null == this.Connection)

@@ -256,9 +256,9 @@ namespace Net.SamuelChen.Tetris {
         void ServerGame_PlayerLeaved(object sender, PlayerEventArgs e) {
             if (m_serverGame.Players.Count == 1) {
                 m_serverGame.Stop();
-                m_serverGame.CallClients("STOP");
+                m_serverGame.NotifyClients("STOP");
             }
-            m_serverGame.CallClients("STOP," + e.Player.Name);
+            m_serverGame.NotifyClients("STOP," + e.Player.Name);
         }
 
         void ServerGame_PlayerJoined(object sender, PlayerEventArgs e) {

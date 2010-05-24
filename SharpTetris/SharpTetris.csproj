@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{DF1AE0AC-21B7-414C-B275-C97B934D5E79}</ProjectGuid>
     <OutputType>WinExe</OutputType>
@@ -139,14 +139,6 @@
       <DependentUpon>MainForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Test\NetworkTest.resx">
-      <DependentUpon>NetworkTest.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Test\PlayPanelTest.resx">
-      <DependentUpon>PlayPanelTest.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <Compile Include="Controls\WizPageMultiPlayer.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -170,18 +162,6 @@
     </Compile>
     <Compile Include="Controls\WizPageHost.Designer.cs">
       <DependentUpon>WizPageHost.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Test\NetworkTest.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Test\NetworkTest.Designer.cs">
-      <DependentUpon>NetworkTest.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Test\PlayPanelTest.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Test\PlayPanelTest.Designer.cs">
-      <DependentUpon>PlayPanelTest.cs</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -214,7 +194,6 @@
     <Content Include="setting.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SharpTetris.ico" />
     <Content Include="skin\default\blockBlank.bmp">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
