@@ -75,80 +75,124 @@ namespace Net.SamuelChen.Tetris.Game {
             if (null != this.PlayerJoined)
                 this.PlayerJoined(this, new PlayerEventArgs(player));
 
-            NetworkContent content = this.CallClient(player.HostName, "NAME");
-            string[] tmp = content.GetString().Split(new char[] { ':' });
-            player.Name = tmp[0];
+            // tell new player how many players here
+            foreach (Player p in this.Players.Values) {
+                this.CallClient(player.HostName, "JOIN," + p.HostName);
+            }
+
+            // tell all players the new player joined
+            this.CallClients("JOIN," + player.HostName);
+
+            // Get name
+            this.CallClient(player.HostName, "NAME");
         }
 
         void OnClientDisconnected(object sender, NetworkEventArgs e) {
             RemoteInformation ri = e.RemoteInformation;
             if (null == ri)
                 return;
-            Player player = this.GetPlayerByHostName(ri.Name);
+            Player player = this.GetPlayerByhostName(ri.Name);
             if (null != player)
                 this.RemovePlayer(player);
 
             if (null != this.PlayerLeaved)
                 this.PlayerLeaved(this, new PlayerEventArgs(player));
+
+            this.CallClients(player.HostName, "QUIT");
         }
 
         void OnClientCalled(object sender, NetworkEventArgs e) {
             if (null == e.Content)
                 return;
+            string hostName = e.RemoteInformation.Name;
+            string tmp = e.Content.GetString();
+            if (string.IsNullOrEmpty(tmp))
+                return;
 
-            this.DispatchCommand(e.Content);
-            
+            string[] commands = tmp.Split(new char[] { '(', ')' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string command in commands) {
+
+                string[] cmd = this.ParseCommand(command);
+
+                if (cmd.Length < 2)
+                    break;
+                //string hostName = cmd[0];
+                //string action = cmd[1];
+                //string arg = 
+                if (cmd.Length > 2 && cmd[1].Equals("NAME")) {
+                    string playerName = cmd[2];
+                    Player player = null;
+                    if (!this.Players.TryGetValue(playerName, out player)) {
+                        player = this.GetPlayerByhostName(hostName);
+                        player.Name = playerName;
+                    } else {
+                        // name is in use
+                        player.Name = playerName + "@" + hostName;
+                        this.CallClients(hostName, "NAME," + player.Name);
+                    }
+                } else if (cmd.Length > 1 && cmd[1].Equals("READY")) {
+                    Player player = this.GetPlayerByhostName(hostName);
+                    player.Tag = "READY";
+                    bool bReady = true;
+                    foreach (Player p in this.Players.Values) {
+                        if (!p.Tag.Equals("READY")) {
+                            bReady = false;
+                            break;
+                        }
+                    }
+                }
+                this.DispatchCommand(e.Content);
+            }            
         }
 
         #endregion
 
-        protected Player GetPlayerByHostName(string hostname) {
+        protected string[] ParseCommand(string command) {
+            string[] commands = command.Split(
+                new char[] { '#', ',' }, StringSplitOptions.RemoveEmptyEntries);
+            return commands;
+        }
+
+        protected Player GetPlayerByhostName(string hostName) {
             foreach (Player player in this.Players.Values) {
-                if (player.HostName.Equals(hostname, StringComparison.CurrentCultureIgnoreCase))
+                if (hostName.Equals(player.HostName, StringComparison.CurrentCultureIgnoreCase))
                     return player;
             }
             return null;
         }
 
-        public NetworkContent CallClient(string hostname, string command)
+        /*
+        public NetworkContent CallClient(string hostName, string command)
         {
-            Player player = GetPlayerByHostName(hostname);
+            Player player = GetPlayerByhostName(hostName);
             Debug.Assert(null != player);
             if (null == player)
                 return null;
 
             NetworkContent content = new NetworkContent(EnumNetworkContentType.String,
                 string.Format("({0}:{1})", player.Name.ToUpper(), command.ToUpper()));
-            return m_server.CallClient(hostname, content);
+            return m_server.CallClient(hostName, content);
         }
+        */
 
-        public void NotifyClient(string hostname, string command) {
-            Player player = GetPlayerByHostName(hostname);
-            Debug.Assert(null != player);
-            if (null == player)
-                return;
+        public void CallClient(string hostName, string command) {
+            Player player = GetPlayerByhostName(hostName);
             NetworkContent content = new NetworkContent(EnumNetworkContentType.String, 
-                string.Format("({0}:{1})", player.Name.ToUpper(), command.ToUpper()));
-            m_server.NotifyClient(hostname, content);
-            content = null;
-
+                string.Format("({0}#{1})", hostName, command.ToUpper()));
+            m_server.CallClient(hostName, content);
         }
 
-        public void NotifyClients(string command) {
-            this.NotifyClients("ALL", command);
+        public void CallClients(string command) {
+            this.CallClients("ALL", command);
         }
 
-        public void NotifyClients(string hostname, string command) {
-            Debug.Assert(!string.IsNullOrEmpty(hostname) && !string.IsNullOrEmpty(command));
-            if (string.IsNullOrEmpty(hostname) || string.IsNullOrEmpty(command))
+        public void CallClients(string hostName, string command) {
+            Debug.Assert(!string.IsNullOrEmpty(hostName) && !string.IsNullOrEmpty(command));
+            if (string.IsNullOrEmpty(hostName) || string.IsNullOrEmpty(command))
                 return;
 
-            Player player = GetPlayerByHostName(hostname);
-            Debug.Assert(null != player);
-            if (null == player)
-                return;
             m_server.Boardcast(new NetworkContent(EnumNetworkContentType.String,
-                string.Format("({0}:{1})", player.Name.ToUpper(), command.ToUpper())));
+                string.Format("({0}#{1})", hostName, command.ToUpper())));
         }
 
         public void DispatchCommand(NetworkContent content)
@@ -160,6 +204,7 @@ namespace Net.SamuelChen.Tetris.Game {
 
         public void StartService() {
             m_server.MaxConnections = this.MaxPlayers;
+            this.CallClients("NAME");
             m_server.Start();
         }
         public void StopService() {
@@ -171,7 +216,7 @@ namespace Net.SamuelChen.Tetris.Game {
         /// </summary>
         public override void New() {
             base.New();
-            this.NotifyClients("NEW");
+            this.CallClients("NEW");
             m_timer.Interval = 3000;
 
         }
@@ -183,7 +228,7 @@ namespace Net.SamuelChen.Tetris.Game {
         /// <returns></returns>
         public override void Start(int level) {
             base.Start(level);
-            this.NotifyClients(string.Format("START,{0}", level));
+            this.CallClients(string.Format("START,{0}", level));
             m_timer.Interval = 3000 - level * 100;
             m_timer.Start();
         }
@@ -197,7 +242,7 @@ namespace Net.SamuelChen.Tetris.Game {
         /// </summary>
         public override void Stop() {
             base.Stop();
-            this.NotifyClients("STOP");
+            this.CallClients("STOP");
             m_timer.Stop();
             m_server.Stop();
         }
@@ -207,7 +252,7 @@ namespace Net.SamuelChen.Tetris.Game {
         /// </summary>
         public override void Pause() {
             m_timer.Stop();
-            this.NotifyClients("PAUSE");
+            this.CallClients("PAUSE");
             base.Pause();
         }
 
@@ -216,12 +261,23 @@ namespace Net.SamuelChen.Tetris.Game {
         /// </summary>
         public override void Resume() {
             base.Resume();
-            this.NotifyClients("RESUME");
+            this.CallClients("RESUME");
             m_timer.Start();
         }
 
         //public override void Refresh() {
         //    base.Refresh();
+        //}
+
+        //public override void AddPlayer(Player player) {
+        //    base.AddPlayer(player);
+        //    this.CallClients("JOIN," + player.Name);
+        //}
+
+        //public override Player RemovePlayer(string name) {
+        //    Player player = base.RemovePlayer(name);
+        //    this.CallClients("QUIT," + player.Name);
+        //    return player;
         //}
 
         #endregion
@@ -233,7 +289,7 @@ namespace Net.SamuelChen.Tetris.Game {
                 //m_server.CallClient(player.HostName, new NetworkContent(EnumNetworkContentType.String, "GETACTION"));
 
                 // move shape
-                this.NotifyClients("GO");
+                this.CallClients("GO");
 
                 //TODO: score and level
             }

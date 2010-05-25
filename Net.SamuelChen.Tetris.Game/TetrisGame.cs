@@ -62,7 +62,7 @@ namespace Net.SamuelChen.Tetris.Game {
             if (_disposed)
                 return;
 
-            this.Stop();
+            //this.Stop();
             base.Dispose();
             _disposed = true;
         }

@@ -19,6 +19,6 @@ namespace Net.SamuelChen.Tetris.Network {
 
         void Connect(string hostNameOrIP, int port);
         void Disconnect();
-        bool NotifyServer(NetworkContent content);
+        bool CallServer(NetworkContent content);
     }
 }

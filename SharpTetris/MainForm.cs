@@ -79,7 +79,11 @@ namespace Net.SamuelChen.Tetris {
             if (null != m_game) {
                 m_game.Dispose();
                 m_game = null;
-            }            
+            }
+            if (null != m_serverGame) {
+                m_serverGame.Dispose();
+                m_serverGame = null;
+            }
         }
 
         private void OnAllMenu_Click(object sender, EventArgs e) {
@@ -139,6 +143,8 @@ namespace Net.SamuelChen.Tetris {
             ClientGame game = (m_game = GameFactory.CreateGame(EnumGameType.Client) as TetrisGame) as ClientGame;
             game.Joined += new EventHandler<PlayerEventArgs>(ClientGame_Joined);
             game.Left += new EventHandler<PlayerEventArgs>(ClientGame_Left);
+            game.Left += new EventHandler<PlayerEventArgs>(ClientGame_Left);
+            game.PlayerJoined += new EventHandler<PlayerEventArgs>(ClientGame_PlayerJoined);
             game.Container = m_gameContainer;
             game.AddPlayer(player);
             game.Connect("localhost", port);
@@ -187,6 +193,8 @@ namespace Net.SamuelChen.Tetris {
             game.AddPlayer(player);
             game.Joined += new EventHandler<PlayerEventArgs>(ClientGame_Joined);
             game.Left += new EventHandler<PlayerEventArgs>(ClientGame_Left);
+            game.PlayerJoined += new EventHandler<PlayerEventArgs>(ClientGame_PlayerJoined);
+            game.PlayerLeft += new EventHandler<PlayerEventArgs>(ClientGame_PlayerLeft);
             //game.Connect(serverEndPoint);
             game.Connect(info[3], Convert.ToInt32(info[5]));
 
@@ -256,9 +264,11 @@ namespace Net.SamuelChen.Tetris {
         void ServerGame_PlayerLeaved(object sender, PlayerEventArgs e) {
             if (m_serverGame.Players.Count == 1) {
                 m_serverGame.Stop();
-                m_serverGame.NotifyClients("STOP");
+                m_serverGame.PlayerJoined -= (ServerGame_PlayerJoined);
+                m_serverGame.PlayerLeaved -= (ServerGame_PlayerLeaved);
             }
-            m_serverGame.NotifyClients("STOP," + e.Player.Name);
+
+            this.Refresh();
         }
 
         void ServerGame_PlayerJoined(object sender, PlayerEventArgs e) {
@@ -268,10 +278,11 @@ namespace Net.SamuelChen.Tetris {
                 "Player {0} joined. Waiting for rest client players ({1}/{2}) ...", 
                     player.Name, m_serverGame.Players.Count, m_serverGame.MaxPlayers),
                 new Font("MSYH", 8), Brushes.CadetBlue, 5, 5, 0, 0);
-            if (m_game.Players.Count < m_serverGame.Players.Count) {
-                this.InitPlayer(player);
-                m_game.AddPlayer(player);
-            }
+            //if (m_game.Players.Count < m_serverGame.Players.Count) {
+            //    this.InitPlayer(player);
+            //    m_game.AddPlayer(player);
+            //}
+
             if (m_serverGame.Players.Count == m_serverGame.MaxPlayers) {
                 m_serverGame.Start();
             }
@@ -291,6 +302,8 @@ namespace Net.SamuelChen.Tetris {
             //TODO: uses skin
             player.InfoPanel.SetString("info", "You have joined the game. Waiting for other players...",
                  new Font("MSYH", 8), Brushes.Gray, 5, player.InfoPanel.Height - 20, 0, 0);
+
+            this.Refresh();
         }
 
         void ClientGame_Left(object sender, PlayerEventArgs e) {
@@ -302,9 +315,45 @@ namespace Net.SamuelChen.Tetris {
             player.InfoPanel.SetString("info", "You have left the game.",
                  new Font("MSYH", 8), Brushes.Gray, 5, player.InfoPanel.Height - 20, 0, 0);
             game.Stop();
+            game.Joined -= (ClientGame_Joined);
+            game.Left -= (ClientGame_Left);
+            game.PlayerJoined -= (ClientGame_PlayerJoined);
+            game.PlayerLeft -= (ClientGame_PlayerLeft);
             game.Dispose();
             game = null;
+
+            this.Refresh();
         }
+
+        void ClientGame_PlayerJoined(object sender, PlayerEventArgs e) {
+            ClientGame game = m_game as ClientGame; //sender as ClientGame;
+            Player player = e.Player;
+            if (null == game || null == player)
+                return;
+
+            this.InitPlayer(player);
+
+            //TODO: uses skin
+            player.InfoPanel.SetString("info",
+                string.Format("{0} has joined the game. Waiting for other players...", player.Name),
+                new Font("MSYH", 8), Brushes.Gray, 5, player.InfoPanel.Height - 20, 0, 0);
+
+            this.Refresh();
+        }
+
+        void ClientGame_PlayerLeft(object sender, PlayerEventArgs e) {
+            ClientGame game = m_game as ClientGame; //sender as ClientGame;
+            Player player = e.Player;
+            if (null == game || null == player || null == player.InfoPanel)
+                return;
+
+            //TODO: uses skin
+            player.InfoPanel.SetString("info", string.Format("{0} has left the game.", player.Name),
+                 new Font("MSYH", 8), Brushes.Gray, 5, player.InfoPanel.Height - 20, 0, 0);
+
+            this.Refresh();
+        }
+
 
         #endregion
 
@@ -325,8 +374,13 @@ namespace Net.SamuelChen.Tetris {
         }
 
         private void InitPlayer(Player player) {
-            player.PlayFiled = new PlayPanel();
-            player.InfoPanel = new InfoPanel(m_gameContainer);
+            if (null == player.PlayFiled) {
+                player.PlayFiled = new PlayPanel();
+                m_gameContainer.Controls.Add(player.PlayFiled);
+            }
+            
+            if (null == player.InfoPanel)
+                player.InfoPanel = new InfoPanel(m_gameContainer);
             player.InfoPanel.AutoRefresh = true;
             player.InfoPanel.Width = player.PlayFiled.Width;
             player.InfoPanel.Height = 100;

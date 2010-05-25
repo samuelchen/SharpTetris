@@ -21,6 +21,8 @@ namespace Net.SamuelChen.Tetris.Network {
     public class Server : Host, IServer, IDisposable {
 
         public const int DEFAULT_MAX_CONNECTIONS = 20;
+        public const int DEFAULT_PORT = 9527;
+
         private Dictionary<string, RemoteInformation> m_clients;
         private BackgroundWorker m_worker;
         private int m_autoNameId = 0;
@@ -28,8 +30,12 @@ namespace Net.SamuelChen.Tetris.Network {
         #region ctor
 
         public Server() : base() { }
-        public Server(int port) : base(port) { }
-        public Server(int port, Encoding encoding) : base(port, encoding) { }
+        public Server(int port) : base() {
+            this.LocalEndPoint = new IPEndPoint(IPAddress.Any, port);
+        }
+        public Server(int port, Encoding encoding) : this(port) {
+            this.Encoding = encoding;
+        }
 
         protected override void Init() {
             base.Init();
@@ -95,7 +101,7 @@ namespace Net.SamuelChen.Tetris.Network {
                 return;
 
             foreach (string name in m_clients.Keys) {
-                if (!this.NotifyClient(name, content))
+                if (!this.CallClient(name, content))
                     m_clients[name].Worker.CancelAsync();
             }
         }
@@ -106,7 +112,7 @@ namespace Net.SamuelChen.Tetris.Network {
         /// <param name="name">client name</param>
         /// <param name="content">data to send</param>
         /// <returns></returns>
-        public bool NotifyClient(string name, NetworkContent content) {
+        public bool CallClient(string name, NetworkContent content) {
             if (string.IsNullOrEmpty(name) || null == content)
                 return false;
 
@@ -114,7 +120,7 @@ namespace Net.SamuelChen.Tetris.Network {
             if (!m_clients.TryGetValue(name, out ri))
                 return false;
 
-            return this.NotifyClient(ri, content);
+            return this.CallClient(ri, content);
         }
 
         /// <summary>
@@ -123,13 +129,14 @@ namespace Net.SamuelChen.Tetris.Network {
         /// <param name="ri">client information</param>
         /// <param name="content">data to send</param>
         /// <returns></returns>
-        public bool NotifyClient(RemoteInformation ri, NetworkContent content) {
+        public bool CallClient(RemoteInformation ri, NetworkContent content) {
             if (null == ri || null == content)
                 return false;
 
             return Host.SendData(ri.Connection, content.GetBinary());
         }
 
+        /*
         /// <summary>
         /// Call client and wait for return
         /// </summary>
@@ -165,6 +172,7 @@ namespace Net.SamuelChen.Tetris.Network {
                 rc = new NetworkContent(EnumNetworkContentType.Bianary, data, this.Encoding);
             return rc;
         }
+        */
 
         #endregion
 
@@ -267,7 +275,7 @@ namespace Net.SamuelChen.Tetris.Network {
                             RemoteInformation ri = new RemoteInformation();
                             ri.Connection = client;
                             ri.EndPoint = client.Client.RemoteEndPoint as IPEndPoint; //TODO: Need to verify - EndPoint as IPEndPoint 
-                            ri.Name = CreateClientName();
+                            ri.Name = ri.EndPoint.ToString();
                             ri.Content = null;
 
                             worker.ReportProgress(1, ri); // progress == 1 means client connected.
@@ -373,9 +381,9 @@ namespace Net.SamuelChen.Tetris.Network {
         #endregion
 
 
-        private string CreateClientName() {
-            return string.Format("client{0}", m_autoNameId++);
-        }
+        //private string CreateClientName() {
+        //    return string.Format("client{0}", m_autoNameId++);
+        //}
 
         #region IDisposable Members
 

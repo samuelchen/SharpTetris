@@ -151,7 +151,9 @@ namespace Net.SamuelChen.Tetris.Game {
             if (null == form)
                 return;
 
-            this.Location = new Point(x, y);
+            //this.Location = new Point(x, y);
+            this.Left = x;
+            this.Top = y;
             this.Visible = true;
 
             base.Show();

@@ -46,10 +46,10 @@ namespace Net.SamuelChen.Tetris.Game {
             Players.Add(player.Name, player);
         }
 
-        public virtual void RemovePlayer(Player player) {
+        public void RemovePlayer(Player player) {
             if (null == player || string.IsNullOrEmpty(player.Name))
                 return;
-            RemovePlayer(player.Name);
+            this.RemovePlayer(player.Name);
         }
 
         /// <summary>

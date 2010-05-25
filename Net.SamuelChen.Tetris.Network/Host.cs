@@ -8,41 +8,32 @@ using System;
 namespace Net.SamuelChen.Tetris.Network {
     public class Host {
 
-        public const int DEFAULT_PORT = 9527;
-
         #region ctor
 
-        public Host()
-            : this(DEFAULT_PORT) {
+        public Host() {
             this.Init();
         }
 
-        public Host(int port) {
-            IPHostEntry host = Dns.GetHostEntry("localhost");
-            this.LocalEndPoint = new IPEndPoint(host.AddressList[0], port);
-            this.Encoding = Encoding.Unicode;  //default encoding
-            this.Name = host.HostName;
-            this.Init();
-        }
-
-        public Host(int port, Encoding encoding)
-            : this(port) {
+        public Host(Encoding encoding)
+            : this() {
             this.Encoding = encoding;
-            this.Init();
         }
 
         protected virtual void Init() {
+            IPHostEntry host = Dns.GetHostEntry("localhost");
+            this.Name = host.HostName;  //default hostname
             this.Timeout = 15000; // default is 15 seconds.
+            this.Encoding = Encoding.Unicode;  //default encoding
         }
 
         #endregion
 
         #region Properties
 
-        public IPEndPoint LocalEndPoint { get; set; }
-        public Encoding Encoding { get; protected set; }
-        public string Name { get; set; }
-        public int Timeout { get; set; }
+        public virtual IPEndPoint LocalEndPoint { get; set; }
+        public virtual Encoding Encoding { get; protected set; }
+        public virtual string Name { get; set; }
+        public virtual int Timeout { get; set; }
 
         #endregion
 
@@ -118,6 +109,7 @@ namespace Net.SamuelChen.Tetris.Network {
 
         }
 
+        /*
         public static bool SendAndReceive(TcpClient client, byte[] data, out byte[] ret) {
             ret = null;
             if (null == client || !client.Connected || null == data)
@@ -168,6 +160,7 @@ namespace Net.SamuelChen.Tetris.Network {
 
             return true;
         }
+        */
 
         #endregion
     }

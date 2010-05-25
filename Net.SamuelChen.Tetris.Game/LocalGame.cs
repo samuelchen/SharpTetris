@@ -73,9 +73,10 @@ namespace Net.SamuelChen.Tetris.Game {
             this.Container.Controls.Add(player.PlayFiled);
         }
 
-        public override void RemovePlayer(Player player) {
-            base.RemovePlayer(player);
+        public override Player RemovePlayer(string name) {
+            Player player = base.RemovePlayer(name);
             this.Container.Controls.Remove(player.PlayFiled);
+            return player;
         }
 
         public Player GetPlayer(IController c) {
@@ -146,20 +147,21 @@ namespace Net.SamuelChen.Tetris.Game {
             if (null != m_timer)
                 m_timer.Stop();
 
-            foreach (Player player in this.Players.Values) {
-                PlayPanel panel = player.PlayFiled;
-                if (null != panel) {
-                    panel.Status = EnumGameStatus.Over;
-                    panel.RePaint();
-                }
+            if (null != this.Players)
+                foreach (Player player in this.Players.Values) {
+                    PlayPanel panel = player.PlayFiled;
+                    if (null != panel) {
+                        panel.Status = EnumGameStatus.Over;
+                        panel.RePaint();
+                    }
 
-                IController ctrlr = player.Controller;
-                if (null != ctrlr) {
-                    if (ctrlr.Attached)
-                        ctrlr.Deattach();
-                    ctrlr.Stop();
+                    IController ctrlr = player.Controller;
+                    if (null != ctrlr) {
+                        if (ctrlr.Attached)
+                            ctrlr.Deattach();
+                        ctrlr.Stop();
+                    }
                 }
-            }
         }
 
         /// <summary>

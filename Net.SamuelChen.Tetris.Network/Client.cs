@@ -25,8 +25,7 @@ namespace Net.SamuelChen.Tetris.Network {
         #region ctor
 
         public Client() : base() { }
-        public Client(int port) : base(port) { }
-        public Client(int port, Encoding encoding) : base(port, encoding) { }
+        public Client(Encoding encoding) : base(encoding) { }
 
         protected override void Init() {
             base.Init();
@@ -113,8 +112,11 @@ namespace Net.SamuelChen.Tetris.Network {
                     return;
 
                 this.IsConnected = true;
+                this.LocalEndPoint = m_client.Client.LocalEndPoint as IPEndPoint;
+                //this.Name = this.LocalEndPoint.ToString();
                 if (null != this.Connected)
                     this.Connected(this, new EventArgs());
+
 
             } else if (e.ProgressPercentage == 1) {
                 // 1: Host called
@@ -140,7 +142,7 @@ namespace Net.SamuelChen.Tetris.Network {
                 e.Cancel = true;
                 return;
             }
-
+            
             TcpClient client = new TcpClient();
             client.SendTimeout = client.ReceiveTimeout = this.Timeout;
             try {
@@ -199,7 +201,7 @@ namespace Net.SamuelChen.Tetris.Network {
         /// </summary>
         /// <param name="content">the data to send</param>
         /// <returns></returns>
-        public bool NotifyServer(NetworkContent content) {
+        public bool CallServer(NetworkContent content) {
             if (null == m_client || null == content)
                 return false;
 
@@ -208,6 +210,7 @@ namespace Net.SamuelChen.Tetris.Network {
             return Host.SendData(m_client, content.GetBinary());
         }
 
+        /*
         /// <summary>
         /// Send data to server and wait for return
         /// </summary>
@@ -226,6 +229,7 @@ namespace Net.SamuelChen.Tetris.Network {
                 rc = new NetworkContent(EnumNetworkContentType.Bianary, data, this.Encoding);
             return rc;
         }
+        */
 
         #endregion
 
