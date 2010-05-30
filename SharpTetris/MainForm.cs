@@ -150,6 +150,7 @@ namespace Net.SamuelChen.Tetris {
             game.Connect("localhost", port);
             //game.Connect(Dns.GetHostName(), port);
 
+            this.Text = this.Text + " - Server";
             this.Refresh();
 
             //WaitForClientForm dlg = new WaitForClientForm();
@@ -198,7 +199,7 @@ namespace Net.SamuelChen.Tetris {
             //game.Connect(serverEndPoint);
             game.Connect(info[3], Convert.ToInt32(info[5]));
 
-
+            this.Text = this.Text + " - Client";
             this.Refresh();
         }
 
