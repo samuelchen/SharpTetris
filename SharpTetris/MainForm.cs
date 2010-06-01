@@ -128,6 +128,7 @@ namespace Net.SamuelChen.Tetris {
             m_serverGame = GameFactory.CreateGame(EnumGameType.Host) as ServerGame;
             m_serverGame.PlayerJoined += new EventHandler<PlayerEventArgs>(ServerGame_PlayerJoined);
             m_serverGame.PlayerLeaved += new EventHandler<PlayerEventArgs>(ServerGame_PlayerLeaved);
+            m_serverGame.PlayerPrepared += new EventHandler<PlayerEventArgs>(ServerGame_PlayerPrepared);
             m_serverGame.ServicePort = port;
             m_serverGame.MaxPlayers = max;
             m_serverGame.StartService();
@@ -284,11 +285,31 @@ namespace Net.SamuelChen.Tetris {
             //    m_game.AddPlayer(player);
             //}
 
-            if (m_serverGame.Players.Count == m_serverGame.MaxPlayers) {
-                m_serverGame.Start();
-            }
             this.Refresh();
         }
+
+
+        void ServerGame_PlayerPrepared(object sender, PlayerEventArgs e) {
+            if (m_serverGame.Players.Count == m_serverGame.MaxPlayers) {
+                if (m_serverGame.IsReady) {
+                    m_serverGame.Start();
+                    //break;
+                }
+                //DateTime dt = DateTime.Now;
+                //while (true) {
+
+                //    if (DateTime.Now.Subtract(dt).Seconds > 15) {
+                //        // time out
+                //        MessageBox.Show("Game starting time out.");
+                //        m_serverGame.Stop();
+                //        break;
+                //    }
+
+                //    System.Threading.Thread.Sleep(0);
+                //}
+            }
+        }
+
 
         #endregion
 

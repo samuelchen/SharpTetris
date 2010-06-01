@@ -172,10 +172,6 @@ namespace Net.SamuelChen.Tetris.Game {
 
         #region Drawing
 
-        protected override void OnContainerPaint(object sender, PaintEventArgs e) {
-            base.OnContainerPaint(sender, e);
-        }
-
         protected override void Paint(Graphics gr) {
             if (null == gr)
                 return;

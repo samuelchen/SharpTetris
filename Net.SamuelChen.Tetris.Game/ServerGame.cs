@@ -8,9 +8,10 @@ using System.Diagnostics;
 
 namespace Net.SamuelChen.Tetris.Game {
     public class ServerGame : TetrisGame {
-
+            
         public event EventHandler<PlayerEventArgs> PlayerJoined;
         public event EventHandler<PlayerEventArgs> PlayerLeaved;
+        public event EventHandler<PlayerEventArgs> PlayerPrepared;
 
         public ServerGame()
             : base() {
@@ -20,6 +21,19 @@ namespace Net.SamuelChen.Tetris.Game {
         #region Properties
 
         public int ServicePort { get; set; }
+
+        public bool IsReady {
+            get {
+                if (this.m_clientReady.Count < this.Players.Count)
+                    return false;
+
+                bool bReady = true;
+                foreach (int count in m_clientReady.Values) {
+                    bReady = bReady && (count == this.MaxPlayers);
+                }
+                return bReady;
+            }
+        }
         
         #endregion
 
@@ -39,6 +53,8 @@ namespace Net.SamuelChen.Tetris.Game {
             m_server.ClientDisconnected += new EventHandler<NetworkEventArgs>(OnClientDisconnected);
             m_server.Started += new EventHandler(OnStarted);
             m_server.Stopped += new EventHandler(OnStopped);
+
+            m_clientReady = new Dictionary<string, int>();
 
         }
 
@@ -72,19 +88,22 @@ namespace Net.SamuelChen.Tetris.Game {
             player.EndPoint = ri.EndPoint;
             this.AddPlayer(player);
 
-            if (null != this.PlayerJoined)
-                this.PlayerJoined(this, new PlayerEventArgs(player));
-
             // tell new player how many players here
             foreach (Player p in this.Players.Values) {
-                this.CallClient(player.HostName, "JOIN," + p.HostName);
+                if (p != player)
+                    this.CallClient(player.HostName, p.HostName, "JOIN");
             }
 
             // tell all players the new player joined
-            this.CallClients("JOIN," + player.HostName);
+            this.CallClients(player.HostName, "JOIN");
 
             // Get name
-            this.CallClient(player.HostName, "NAME");
+            this.CallClient(player.HostName, player.HostName, "NAME");
+            // tell client the max players
+            this.CallClient(player.HostName, player.HostName, "MAX," + this.MaxPlayers.ToString());
+
+            if (null != this.PlayerJoined)
+                this.PlayerJoined(this, new PlayerEventArgs(player));
         }
 
         void OnClientDisconnected(object sender, NetworkEventArgs e) {
@@ -92,13 +111,14 @@ namespace Net.SamuelChen.Tetris.Game {
             if (null == ri)
                 return;
             Player player = this.GetPlayerByhostName(ri.Name);
-            if (null != player)
+            if (null != player) {
                 this.RemovePlayer(player);
 
-            if (null != this.PlayerLeaved)
-                this.PlayerLeaved(this, new PlayerEventArgs(player));
+                this.CallClients(player.HostName, "QUIT");
 
-            this.CallClients(player.HostName, "QUIT");
+                if (null != this.PlayerLeaved)
+                    this.PlayerLeaved(this, new PlayerEventArgs(player));
+            }
         }
 
         void OnClientCalled(object sender, NetworkEventArgs e) {
@@ -116,33 +136,33 @@ namespace Net.SamuelChen.Tetris.Game {
 
                 if (cmd.Length < 2)
                     break;
+                cmd[1] = cmd[1].ToUpper();
                 //string hostName = cmd[0];
                 //string action = cmd[1];
                 //string arg = 
                 if (cmd.Length > 2 && cmd[1].Equals("NAME")) {
                     string playerName = cmd[2];
-                    Player player = null;
-                    if (!this.Players.TryGetValue(playerName, out player)) {
-                        player = this.GetPlayerByhostName(hostName);
-                        player.Name = playerName;
-                    } else {
-                        // name is in use
-                        player.Name = playerName + "@" + hostName;
-                        this.CallClients(hostName, "NAME," + player.Name);
-                    }
-                } else if (cmd.Length > 1 && cmd[1].Equals("READY")) {
                     Player player = this.GetPlayerByhostName(hostName);
-                    player.Tag = "READY";
-                    bool bReady = true;
-                    foreach (Player p in this.Players.Values) {
-                        if (!p.Tag.Equals("READY")) {
-                            bReady = false;
-                            break;
+                    Debug.Assert(null != player);
+                    if (null != player) {
+                        Player tmpPlayer = null;
+                        if (this.Players.TryGetValue(playerName, out tmpPlayer) && tmpPlayer != player) {
+                            // find another player has the given name. change the name.
+                            playerName += "@" + hostName;
+                            // notify client
+                            this.CallClients(hostName, "NAME," + playerName);
                         }
+                        this.ChangePlayerName(player.Name, playerName);
                     }
-                }
-                this.DispatchCommand(e.Content);
-            }            
+                } else if (cmd.Length > 2 && cmd[1].Equals("READY")) {
+                    m_clientReady[hostName] = Convert.ToInt32(cmd[2]);
+                    if (this.PlayerPrepared != null) {
+                        Player player = this.GetPlayerByhostName(hostName);
+                        this.PlayerPrepared(this, new PlayerEventArgs(player));
+                    }
+                } else 
+                    this.DispatchCommand(e.Content);
+            }
         }
 
         #endregion
@@ -154,6 +174,9 @@ namespace Net.SamuelChen.Tetris.Game {
         }
 
         protected Player GetPlayerByhostName(string hostName) {
+            Debug.Assert(null != this.Players);
+            if (null == this.Players)
+                return null;
             foreach (Player player in this.Players.Values) {
                 if (hostName.Equals(player.HostName, StringComparison.CurrentCultureIgnoreCase))
                     return player;
@@ -161,25 +184,10 @@ namespace Net.SamuelChen.Tetris.Game {
             return null;
         }
 
-        /*
-        public NetworkContent CallClient(string hostName, string command)
-        {
-            Player player = GetPlayerByhostName(hostName);
-            Debug.Assert(null != player);
-            if (null == player)
-                return null;
-
-            NetworkContent content = new NetworkContent(EnumNetworkContentType.String,
-                string.Format("({0}:{1})", player.Name.ToUpper(), command.ToUpper()));
-            return m_server.CallClient(hostName, content);
-        }
-        */
-
-        public void CallClient(string hostName, string command) {
-            Player player = GetPlayerByhostName(hostName);
+        public void CallClient(string clientName, string hostName, string command) {
             NetworkContent content = new NetworkContent(EnumNetworkContentType.String, 
-                string.Format("({0}#{1})", hostName, command.ToUpper()));
-            m_server.CallClient(hostName, content);
+                string.Format("({0}#{1})", hostName, command));
+            m_server.CallClient(clientName, content);
         }
 
         public void CallClients(string command) {
@@ -192,7 +200,7 @@ namespace Net.SamuelChen.Tetris.Game {
                 return;
 
             m_server.Boardcast(new NetworkContent(EnumNetworkContentType.String,
-                string.Format("({0}#{1})", hostName, command.ToUpper())));
+                string.Format("({0}#{1})", hostName, command)));
         }
 
         public void DispatchCommand(NetworkContent content)
@@ -204,7 +212,6 @@ namespace Net.SamuelChen.Tetris.Game {
 
         public void StartService() {
             m_server.MaxConnections = this.MaxPlayers;
-            this.CallClients("NAME");
             m_server.Start();
         }
         public void StopService() {
@@ -270,13 +277,14 @@ namespace Net.SamuelChen.Tetris.Game {
         //}
 
         //public override void AddPlayer(Player player) {
-        //    base.AddPlayer(player);
-        //    this.CallClients("JOIN," + player.Name);
+        //    if (null == player)
+        //        return;
+        //    this.Players.Add(player.HostName, player);
         //}
 
-        //public override Player RemovePlayer(string name) {
-        //    Player player = base.RemovePlayer(name);
-        //    this.CallClients("QUIT," + player.Name);
+        //public override Player RemovePlayer(string hostName) {
+        //    Player player = this.Players[hostName];
+        //    this.Players.Remove(hostName);
         //    return player;
         //}
 
@@ -317,6 +325,7 @@ namespace Net.SamuelChen.Tetris.Game {
 
         protected System.Timers.Timer m_timer;
         protected Server m_server;
+        protected IDictionary<string, int> m_clientReady;
 
         #endregion
     }

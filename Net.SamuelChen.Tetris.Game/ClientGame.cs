@@ -138,7 +138,7 @@ namespace Net.SamuelChen.Tetris.Game {
                 return;
 
             string hostName = command[0].Trim(); //client name
-            string action = command[1];
+            string action = command[1].ToUpper();
             string arg = command.Length == 3 ? command[2] : null;
              
             if (action.Equals("GO")) {
@@ -164,10 +164,12 @@ namespace Net.SamuelChen.Tetris.Game {
                 else
                     this.HostGetPlayerName();   // get name. when getting name, only return local player name.
             } else if (action.Equals("JOIN")) {
-                this.Join(arg); // arg is the hostName of which the player joined from.
+                this.Join(hostName); // arg is the hostName of which the player joined from.
             } else if (action.Equals("QUIT")) {
                 this.Quit(hostName);
-            } else if (action.StartsWith("CTRL")) {
+            } else if (action.Equals("MAX")) {
+                if (null != arg)
+                    this.MaxPlayers = Convert.ToInt32(arg);
             }
         }
 
@@ -192,7 +194,6 @@ namespace Net.SamuelChen.Tetris.Game {
             
             foreach (Player player in this.Players.Values){
                 player.PlayFiled.Go();
-                break;
             }             
         }
 
@@ -219,9 +220,13 @@ namespace Net.SamuelChen.Tetris.Game {
 
 
         private void HostSetPlayerName(string hostName, string playerName) {
+            Debug.Assert(!hostName.Equals("ALL"));
+
             Player player = this.GetPlayerByhostName(hostName);
-            if (null != player)
-                player.Name = playerName;
+            Debug.Assert(null != player);
+            if (null != player) {
+                this.ChangePlayerName(player.Name, playerName);
+            }
         }
 
         private void HostGetPlayerName() {
@@ -236,6 +241,7 @@ namespace Net.SamuelChen.Tetris.Game {
         }
 
         private void Join(string hostName) {
+            Debug.Assert(!hostName.Equals("ALL"));
             Debug.Assert(!string.IsNullOrEmpty(hostName));
             if (hostName.Equals(m_client.Name) || string.IsNullOrEmpty(hostName))
                 return;
@@ -252,9 +258,13 @@ namespace Net.SamuelChen.Tetris.Game {
 
             if (null != this.PlayerJoined)
                 this.PlayerJoined(this, new PlayerEventArgs(player));
+
+            //if (this.Players.Count == this.MaxPlayers)
+            this.CallServer("READY," + this.Players.Count.ToString());
         }
 
         private void Quit(string hostName) {
+            Debug.Assert(!hostName.Equals("ALL"));
             if (hostName.Equals(m_client.Name))
                 return;
             Player player = this.GetPlayerByhostName(hostName);

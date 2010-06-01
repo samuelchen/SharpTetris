@@ -29,6 +29,8 @@ namespace Net.SamuelChen.Tetris.Rule {
     }
 
     interface IMovementRule : IRule {
+        bool CanMoveTo(object direction);
+        bool CanTurnTo(object direction);
     }
 
     interface IActionRule : IRule {

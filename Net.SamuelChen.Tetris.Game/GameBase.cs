@@ -11,6 +11,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Diagnostics;
 
 namespace Net.SamuelChen.Tetris.Game {
     public abstract class GameBase : IGame {
@@ -64,6 +65,35 @@ namespace Net.SamuelChen.Tetris.Game {
 
             Players.Remove(name);
             return player;
+        }
+
+        /// <summary>
+        /// Change a player name.
+        /// </summary>
+        /// <param name="oldName"></param>
+        /// <param name="newName"></param>
+        /// <returns></returns>
+        public bool ChangePlayerName(string oldName, string newName) {
+            Debug.Assert(null != Players);
+            Debug.Assert(!oldName.Equals(newName, StringComparison.InvariantCultureIgnoreCase));
+            Debug.Assert(!Players.Keys.Contains(newName));
+
+            if (null == Players)
+                return false;
+
+            if (oldName.Equals(newName, StringComparison.InvariantCultureIgnoreCase))
+                return false;
+
+            if (Players.Keys.Contains(newName))
+                return false;
+
+            Player player = null;
+            if (Players.TryGetValue(oldName, out player)) {
+                player.Name = newName;
+                Players.Remove(oldName);
+                Players.Add(newName, player);
+            }
+            return true;
         }
 
         #endregion
