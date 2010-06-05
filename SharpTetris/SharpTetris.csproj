@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{DF1AE0AC-21B7-414C-B275-C97B934D5E79}</ProjectGuid>
     <OutputType>WinExe</OutputType>
@@ -180,6 +180,10 @@
     <ProjectReference Include="..\Net.SamuelChen.Tetris.Network\Net.SamuelChen.Tetris.Network.csproj">
       <Project>{EEA077F7-D2A0-4FD9-A4B8-173DF43928E9}</Project>
       <Name>Net.SamuelChen.Tetris.Network</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Net.SamuelChen.Tetris.Rule\Net.SamuelChen.Tetris.Rule.csproj">
+      <Project>{2C5BE28F-D553-4DF0-A0D1-8DC1CAC62B9F}</Project>
+      <Name>Net.SamuelChen.Tetris.Rule</Name>
     </ProjectReference>
     <ProjectReference Include="..\Net.SamuelChen.Tetris.Service\Net.SamuelChen.Tetris.Service.csproj">
       <Project>{3BBFC5E7-E5FB-4998-A429-CC32EDBAEC94}</Project>

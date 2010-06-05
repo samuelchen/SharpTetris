@@ -25,7 +25,6 @@ namespace Net.SamuelChen.Tetris.Network {
 
         private Dictionary<string, RemoteInformation> m_clients;
         private BackgroundWorker m_worker;
-        private int m_autoNameId = 0;
 
         #region ctor
 

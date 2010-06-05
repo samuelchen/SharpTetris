@@ -11,7 +11,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Diagnostics;
 
 namespace Net.SamuelChen.Tetris.Rule {
     public class Command : ICommand {
@@ -19,7 +18,8 @@ namespace Net.SamuelChen.Tetris.Rule {
             this.ID = id;
         }
 
-        public Command(object id, CommandHandler handler) : this(id) {
+        public Command(object id, CommandHandler handler)
+            : this(id) {
             this.Handler = handler;
         }
 
@@ -28,7 +28,7 @@ namespace Net.SamuelChen.Tetris.Rule {
             this.Name = name;
         }
 
-        public Command(object id, string name, CommandHandler handler, params object[] parameters) 
+        public Command(object id, string name, CommandHandler handler, params object[] parameters)
             : this(id, name, handler) {
             if (null != parameters && parameters.Length > 0) {
                 this.Parameters = parameters;
@@ -39,12 +39,6 @@ namespace Net.SamuelChen.Tetris.Rule {
         public string Name { get; set; }
         public string Description { get; set; }
         public string[] ParameterDescriptions { get; protected set; }
-
-        public virtual object Execute() {
-            object result = null;
-            this.Execute(out result);
-            return result;
-        }
 
         public string FindParameterDescription(object parameter) {
             if (null == this.Parameters)
@@ -61,23 +55,39 @@ namespace Net.SamuelChen.Tetris.Rule {
         public virtual object ID { get; protected set; }
         public virtual CommandHandler Handler { get; set; }
         public virtual object[] Parameters { get; set; }
-        
-        public virtual bool Execute(out object result) {
-            result = null;
+        public virtual object Result { get; protected set; }
+        public string ErrorMessage { get; protected set; }
+
+        public virtual bool Execute() {
+            this.Result = null;
+            this.ErrorMessage = null;
+
             if (null == this.Handler)
                 return false;
 
             try {
-                result = this.Handler(this.Parameters);
+                this.Result = this.Handler(this.Parameters);
             } catch (Exception err) {
-                Trace.TraceWarning("Excute command {0} failed.", this.ID);
-                Trace.TraceWarning(err.ToString());
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("Error occurs whlile executing command '{0}'.", this.ID);
+                sb.AppendLine();
+                sb.AppendFormat("Name: {0}", this.Name);
+                sb.AppendLine();
+                sb.AppendFormat("Description: {0}", this.Description);
+                sb.AppendLine();
+                sb.AppendFormat("Handler: {0}.{1}", this.Handler.Method.ReflectedType, this.Handler.Method.Name);
+                sb.AppendLine();
+                sb.AppendLine("Parameters:");
+                for (int i = 0; i < this.Parameters.Length; i++) {
+                    sb.AppendFormat("{0}: {1}", i, this.Parameters[i]);
+                    sb.AppendLine();
+                }
+                this.ErrorMessage = sb.ToString();
                 return false;
             }
             return true;
         }
 
-        #endregion       
+        #endregion
     }
-
 }

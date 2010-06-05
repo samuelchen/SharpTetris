@@ -20,6 +20,8 @@ namespace Net.SamuelChen.Tetris.Rule {
         object ID { get; }
         CommandHandler Handler { get; set; }
         object[] Parameters { get; set; }
-        bool Execute(out object result);
+        object Result { get; }
+        string ErrorMessage { get; }
+        bool Execute();
     }
 }

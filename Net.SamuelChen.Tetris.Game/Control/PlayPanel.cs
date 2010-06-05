@@ -23,18 +23,22 @@ namespace Net.SamuelChen.Tetris.Game {
     /// </summary>
     public class PlayPanel : System.Windows.Forms.PictureBox {
 
+        public event EventHandler NextShapeRequested;
+
         /// <summary>
         /// ctor()
         /// </summary>
-        public PlayPanel() {
+        public PlayPanel(bool isNetworkGame) {
 
             m_minBlocks = m_maxBlocks = Shape.DEFAULT_BLOCK_NUM;
             this.Columns = 17;
             this.Rows = 22;
             this.BlockWidth = this.BlockHeight = 16;
-
+            this.IsNetworkGame = isNetworkGame;
             m_rnd = new Random(System.DateTime.Now.Millisecond);
 
+            if (isNetworkGame)
+                m_nextShapeQueue = new Queue<Shape>();
             Initialize();
         }
 
@@ -61,7 +65,6 @@ namespace Net.SamuelChen.Tetris.Game {
             this.Status = EnumGameStatus.Ready;
             this.RePaint();
 
-            //m_Game = theGame;
             CreateNextShape();
         }
 
@@ -93,17 +96,22 @@ namespace Net.SamuelChen.Tetris.Game {
         /// </summary>
         public EnumGameStatus Status { get; set; }
 
+
+        public bool IsNetworkGame { get; protected set; }
+
+
         /// <summary>
         /// Min block number of a shape. Between Shape.MIN_BLOCK_NUM and Shape.MAX_BLOCK_NUM
         /// </summary>
         public int MinShapeBlockNumber {
             set {
 
-                if (value < Shape.MIN_BLOCK_NUM || value > Shape.MAX_BLOCK_NUM || value > this.MaxShapeBlockNumber)
+                if (value < Shape.MIN_BLOCK_NUM || value > Shape.MAX_BLOCK_NUM || value > m_maxBlocks)
                     throw (new ArgumentException("The min block number of a shape is incorrect."));
+                m_minBlocks = value;
             }
             get {
-                return this.m_minBlocks;
+                return m_minBlocks;
             }
         }
 
@@ -113,11 +121,12 @@ namespace Net.SamuelChen.Tetris.Game {
         public int MaxShapeBlockNumber {
             set {
 
-                if (value < Shape.MIN_BLOCK_NUM || value > Shape.MAX_BLOCK_NUM || value < this.MinShapeBlockNumber)
+                if (value < Shape.MIN_BLOCK_NUM || value > Shape.MAX_BLOCK_NUM || value < m_minBlocks)
                     throw (new ArgumentException("The max block number of a shape is incorrect."));
+                m_maxBlocks = value;
             }
             get {
-                return this.m_maxBlocks;
+                return m_maxBlocks;
             }
         }
 
@@ -272,20 +281,41 @@ namespace Net.SamuelChen.Tetris.Game {
         /// Create a new shape as next shape and place current next shape to field.
         /// </summary>
         public void CreateNextShape() {
-            int num = ShapeFactory.GetRandomBlocksNumber(this.MinShapeBlockNumber, this.MaxShapeBlockNumber);
-            ShapeFactory factory = ShapeFactory.CreateInstance(num);
+            Shape sharp = null;
+            if (this.IsNetworkGame) {
+                if (m_nextShapeQueue.Count > 0)
+                    sharp = m_nextShapeQueue.Dequeue();
+                if (null == sharp && null != this.NextShapeRequested)
+                    this.NextShapeRequested(this, new EventArgs());
+            } else{
+                int num = ShapeFactory.GetRandomBlocksNumber(this.MinShapeBlockNumber, this.MaxShapeBlockNumber);
+                ShapeFactory factory = ShapeFactory.CreateInstance(num);
+                sharp = factory.CreateRandomShape();
+            }
+
             if (null != m_curShape)
                 m_curShape.Moved -= new ShapeMovingHandler(OnCurShape_Moved);
             m_curShape = m_nextShape;
             if (null != m_curShape)
                 m_curShape.Moved += new ShapeMovingHandler(OnCurShape_Moved);
 
-            m_nextShape = factory.CreateRandomShape();
-            m_nextShape.Tag = m_rnd.Next(0, 5); // image index
+            m_nextShape = sharp;
+            if (null != m_nextShape)
+                m_nextShape.Tag = m_rnd.Next(0, 5); // image index
 
             //if (null != m_nextShape && null != m_InfoPanel) {
             //    m_InfoPanel.Block = m_nextShape;
             //}
+        }
+
+        public void AddShapeToNextQueue(int blocks, int type) {
+            if (!this.IsNetworkGame)
+                return;
+
+            ShapeFactory factory = ShapeFactory.CreateInstance(blocks);
+            Shape shape = factory.CreateShape(type);
+            if (this.IsNetworkGame)
+                m_nextShapeQueue.Enqueue(shape);
         }
 
         /// <summary>
@@ -309,6 +339,8 @@ namespace Net.SamuelChen.Tetris.Game {
                 if (null != m_curShape) {
                     DestroyCurShape();
                     CheckLines();
+                    //if (null != this.NextShapeRequested)
+                    //    this.NextShapeRequested(this, new EventArgs());
                 }
                 if (Defeated()) {
                     this.Status = EnumGameStatus.Defeated;
@@ -592,7 +624,7 @@ namespace Net.SamuelChen.Tetris.Game {
 #if DEBUG
         public string DebugString = string.Empty;
 #endif
-
+        private Queue<Shape> m_nextShapeQueue;
         #endregion
     }
 }

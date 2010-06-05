@@ -16,6 +16,7 @@ using Net.SamuelChen.Tetris.Game;
 using System.Diagnostics;
 using System.Net;
 using System.Drawing;
+using Net.SamuelChen.Tetris.Rule;
 
 namespace Net.SamuelChen.Tetris {
     public partial class MainForm : Form {
@@ -126,6 +127,7 @@ namespace Net.SamuelChen.Tetris {
             if (null != m_serverGame)
                 m_serverGame.Dispose();
             m_serverGame = GameFactory.CreateGame(EnumGameType.Host) as ServerGame;
+            InitServerCommands();
             m_serverGame.PlayerJoined += new EventHandler<PlayerEventArgs>(ServerGame_PlayerJoined);
             m_serverGame.PlayerLeaved += new EventHandler<PlayerEventArgs>(ServerGame_PlayerLeaved);
             m_serverGame.PlayerPrepared += new EventHandler<PlayerEventArgs>(ServerGame_PlayerPrepared);
@@ -135,10 +137,6 @@ namespace Net.SamuelChen.Tetris {
 
             // A host is also a client when hosting a server game.
             IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Parse(info[3]), port);
-            Player player = players[0]; // first player as local player
-            this.InitPlayer(player);
-            player.Name = info[1];
-            player.HostName = Dns.GetHostName();
             if (null != m_game)
                 m_game.Dispose();
             ClientGame game = (m_game = GameFactory.CreateGame(EnumGameType.Client) as TetrisGame) as ClientGame;
@@ -146,10 +144,17 @@ namespace Net.SamuelChen.Tetris {
             game.Left += new EventHandler<PlayerEventArgs>(ClientGame_Left);
             game.Left += new EventHandler<PlayerEventArgs>(ClientGame_Left);
             game.PlayerJoined += new EventHandler<PlayerEventArgs>(ClientGame_PlayerJoined);
+            game.GameElapsed += new EventHandler(ClientGame_GameElapsed);
             game.Container = m_gameContainer;
+
+            Player player = players[0]; // first player as local player
+            player.Name = info[1];
+            player.HostName = Dns.GetHostName();
+            player.PlayFiled = new PlayPanel(true);
+            this.InitPlayer(player);
+
             game.AddPlayer(player);
             game.Connect("localhost", port);
-            //game.Connect(Dns.GetHostName(), port);
 
             this.Text = this.Text + " - Server";
             this.Refresh();
@@ -184,20 +189,22 @@ namespace Net.SamuelChen.Tetris {
                 return;
             }
 
-            //IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Parse(info[3]), Convert.ToInt32(info[5]));
-            Player player = players[0]; // first player as local player
-            this.InitPlayer(player);
-            player.Name = info[1];
             if (null != m_game)
                 m_game.Dispose();
             ClientGame game = (m_game = GameFactory.CreateGame(EnumGameType.Client) as TetrisGame) as ClientGame;
             game.Container = m_gameContainer;
-            game.AddPlayer(player);
             game.Joined += new EventHandler<PlayerEventArgs>(ClientGame_Joined);
             game.Left += new EventHandler<PlayerEventArgs>(ClientGame_Left);
             game.PlayerJoined += new EventHandler<PlayerEventArgs>(ClientGame_PlayerJoined);
             game.PlayerLeft += new EventHandler<PlayerEventArgs>(ClientGame_PlayerLeft);
-            //game.Connect(serverEndPoint);
+            game.GameElapsed += new EventHandler(ClientGame_GameElapsed);
+
+            Player player = players[0]; // first player as local player
+            player.Name = info[1];
+            player.PlayFiled = new PlayPanel(true);
+            this.InitPlayer(player);
+
+            game.AddPlayer(player);
             game.Connect(info[3], Convert.ToInt32(info[5]));
 
             this.Text = this.Text + " - Client";
@@ -205,6 +212,14 @@ namespace Net.SamuelChen.Tetris {
         }
 
         private void ShowGameInfo() {
+            if (null == m_game || null == m_game.Players)
+                return;
+
+            foreach (Player player in m_game.Players.Values) {
+                player.InfoPanel.SetString("name", player.Name,
+                    new Font(FontFamily.GenericSansSerif, 8),
+                    Brushes.Gray, 5, 5, 0, 0);
+            }
         }
 
         public override void Refresh() {
@@ -255,6 +270,8 @@ namespace Net.SamuelChen.Tetris {
                 this.Width = panel.Right + padX + 10;
             }
 
+            this.ShowGameInfo();
+
             this.Invalidate();
 
         }
@@ -288,7 +305,6 @@ namespace Net.SamuelChen.Tetris {
             this.Refresh();
         }
 
-
         void ServerGame_PlayerPrepared(object sender, PlayerEventArgs e) {
             if (m_serverGame.Players.Count == m_serverGame.MaxPlayers) {
                 if (m_serverGame.IsReady) {
@@ -309,7 +325,6 @@ namespace Net.SamuelChen.Tetris {
                 //}
             }
         }
-
 
         #endregion
 
@@ -376,10 +391,29 @@ namespace Net.SamuelChen.Tetris {
             this.Refresh();
         }
 
+        void ClientGame_GameElapsed(object sender, EventArgs e) {
+            this.ShowGameInfo();
+        }
 
         #endregion
 
         #region Private methods
+
+        private void InitServerCommands() {
+            ICommand command = new Command("NEXT", "NEXT", 
+                new CommandHandler(this.CreatShape));
+            m_serverGame.Commands.Add(command.ID as string, command); 
+        }
+
+        private Random m_rnd = null;
+        private object CreatShape(params object[] parameters) {
+            int min = 4, max = 4, types = 7; // should be gotten from setting.
+            if (null == m_rnd)
+                m_rnd = new Random(DateTime.Now.Millisecond);
+            int blocks = m_rnd.Next(min, max);
+            int type = m_rnd.Next(types - 1);
+            return string.Format("{0}-{1}", blocks, type);
+        }
 
         private void LoadSkins() {
             this.Text = m_skin.GetString("app_name");
@@ -396,20 +430,23 @@ namespace Net.SamuelChen.Tetris {
         }
 
         private void InitPlayer(Player player) {
-            if (null == player.PlayFiled) {
-                player.PlayFiled = new PlayPanel();
-                m_gameContainer.Controls.Add(player.PlayFiled);
-            }
+            Debug.Assert(null != player.PlayFiled);
+            //if (null == player.PlayFiled) {
+            //    if (m_game.GameType == EnumGameType.Client ||
+            //        m_game.GameType == EnumGameType.Host)
+            //        player.PlayFiled = new PlayPanel(true);
+            //    else
+            //        player.PlayFiled = new PlayPanel(false);
+            //    m_gameContainer.Controls.Add(player.PlayFiled);
+            //}
             
             if (null == player.InfoPanel)
                 player.InfoPanel = new InfoPanel(m_gameContainer);
             player.InfoPanel.AutoRefresh = true;
             player.InfoPanel.Width = player.PlayFiled.Width;
             player.InfoPanel.Height = 100;
-            player.InfoPanel.AddString("name", player.Name,
-                new Font(FontFamily.GenericSansSerif, 8),
-                Brushes.Gray, 5, 5, 0, 0);
         }
+
         #endregion
 
         #region fields

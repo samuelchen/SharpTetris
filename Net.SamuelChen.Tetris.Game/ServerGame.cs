@@ -1,10 +1,21 @@
-﻿using System;
+﻿
+//=======================================================================
+// <copyright file="ServerGame.cs" company="Samuel Chen Studio">
+//     Copyright (c) 2010 Samuel Chen Studio. All rights reserved.
+//     author   : Samuel Chen
+//     purpose  : Serve a game
+//     contact  : http://www.SamuelChen.net, samuel.net@gmail.com
+// </copyright>
+//=======================================================================
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 using Net.SamuelChen.Tetris.Skin;
 using Net.SamuelChen.Tetris.Network;
 using System.Diagnostics;
+using Net.SamuelChen.Tetris.Rule;
 
 namespace Net.SamuelChen.Tetris.Game {
     public class ServerGame : TetrisGame {
@@ -55,7 +66,6 @@ namespace Net.SamuelChen.Tetris.Game {
             m_server.Stopped += new EventHandler(OnStopped);
 
             m_clientReady = new Dictionary<string, int>();
-
         }
 
         #region Server events
@@ -90,14 +100,15 @@ namespace Net.SamuelChen.Tetris.Game {
 
             // tell new player how many players here
             foreach (Player p in this.Players.Values) {
-                if (p != player)
+                if (p != player) {
                     this.CallClient(player.HostName, p.HostName, "JOIN");
+                    this.CallClient(player.HostName, p.HostName, "NAME," + p.Name);
+                }
             }
 
             // tell all players the new player joined
             this.CallClients(player.HostName, "JOIN");
-
-            // Get name
+            // Get client player name
             this.CallClient(player.HostName, player.HostName, "NAME");
             // tell client the max players
             this.CallClient(player.HostName, player.HostName, "MAX," + this.MaxPlayers.ToString());
@@ -110,7 +121,7 @@ namespace Net.SamuelChen.Tetris.Game {
             RemoteInformation ri = e.RemoteInformation;
             if (null == ri)
                 return;
-            Player player = this.GetPlayerByhostName(ri.Name);
+            Player player = this.GetPlayerByHostName(ri.Name);
             if (null != player) {
                 this.RemovePlayer(player);
 
@@ -142,22 +153,24 @@ namespace Net.SamuelChen.Tetris.Game {
                 //string arg = 
                 if (cmd.Length > 2 && cmd[1].Equals("NAME")) {
                     string playerName = cmd[2];
-                    Player player = this.GetPlayerByhostName(hostName);
-                    Debug.Assert(null != player);
-                    if (null != player) {
-                        Player tmpPlayer = null;
-                        if (this.Players.TryGetValue(playerName, out tmpPlayer) && tmpPlayer != player) {
-                            // find another player has the given name. change the name.
-                            playerName += "@" + hostName;
-                            // notify client
-                            this.CallClients(hostName, "NAME," + playerName);
-                        }
-                        this.ChangePlayerName(player.Name, playerName);
+                    this.ChangePlayerName(hostName, playerName);
+                    // notify client
+                    //this.CallClients(hostName, "NAME," + playerName);
+                    this.DispatchCommand(e.Content);
+                } else if (cmd.Length > 1 && cmd[1].Equals("NEXT")) {
+                    ICommand commander = null;
+                    if (this.Commands.TryGetValue(cmd[1], out commander)) {
+                        commander.Parameters = cmd;
+                        if (commander.Execute()) {
+                            string result = commander.Result as string;
+                            this.CallClients(hostName, string.Format("NEXT,{0}", result));
+                        } else
+                            Trace.TraceWarning(commander.ErrorMessage);
                     }
                 } else if (cmd.Length > 2 && cmd[1].Equals("READY")) {
                     m_clientReady[hostName] = Convert.ToInt32(cmd[2]);
                     if (this.PlayerPrepared != null) {
-                        Player player = this.GetPlayerByhostName(hostName);
+                        Player player = this.GetPlayerByHostName(hostName);
                         this.PlayerPrepared(this, new PlayerEventArgs(player));
                     }
                 } else 
@@ -171,17 +184,6 @@ namespace Net.SamuelChen.Tetris.Game {
             string[] commands = command.Split(
                 new char[] { '#', ',' }, StringSplitOptions.RemoveEmptyEntries);
             return commands;
-        }
-
-        protected Player GetPlayerByhostName(string hostName) {
-            Debug.Assert(null != this.Players);
-            if (null == this.Players)
-                return null;
-            foreach (Player player in this.Players.Values) {
-                if (hostName.Equals(player.HostName, StringComparison.CurrentCultureIgnoreCase))
-                    return player;
-            }
-            return null;
         }
 
         public void CallClient(string clientName, string hostName, string command) {
@@ -300,6 +302,8 @@ namespace Net.SamuelChen.Tetris.Game {
                 this.CallClients("GO");
 
                 //TODO: score and level
+                if (null != this.GameElapsed)
+                    this.GameElapsed(this, new EventArgs());
             }
         }
 

@@ -10,11 +10,17 @@
 
 using System;
 using System.Collections.Generic;
+using Net.SamuelChen.Tetris.Rule;
+
 namespace Net.SamuelChen.Tetris.Game {
     public interface IGame {
+
         IDictionary<string, Player> Players { get; }
+        IDictionary<string, ICommand> Commands { get; }
+
         EnumGameStatus Status { get; }
         object Tag { get; set; }
+
         void AddPlayer(Player player);
         void RemovePlayer(Player player);
 

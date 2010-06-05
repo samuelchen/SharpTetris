@@ -76,6 +76,10 @@
       <Project>{EEA077F7-D2A0-4FD9-A4B8-173DF43928E9}</Project>
       <Name>Net.SamuelChen.Tetris.Network</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Net.SamuelChen.Tetris.Rule\Net.SamuelChen.Tetris.Rule.csproj">
+      <Project>{2C5BE28F-D553-4DF0-A0D1-8DC1CAC62B9F}</Project>
+      <Name>Net.SamuelChen.Tetris.Rule</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Net.SamuelChen.Tetris.Skin\Net.SamuelChen.Tetris.Skin.csproj">
       <Project>{F67DCD28-4E0C-4766-817C-D57ED81D4218}</Project>
       <Name>Net.SamuelChen.Tetris.Skin</Name>

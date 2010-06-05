@@ -47,10 +47,10 @@ namespace Net.SamuelChen.Tetris.Game {
             m_timer = null;
 
             m_client = new Client();
-            m_client.Connected += new EventHandler(OnConnected);
-            m_client.Disconnected += new EventHandler(OnDisconnected);
-            m_client.ServerCalled += new EventHandler<NetworkEventArgs>(OnServerCalled);
-            m_client.ServerDataValidating += new NetworkDataValidationHandler(OnServerDataValidating);
+            m_client.Connected += OnConnected;
+            m_client.Disconnected += OnDisconnected;
+            m_client.ServerCalled += OnServerCalled;
+            m_client.ServerDataValidating += OnServerDataValidating;
 
         }
 
@@ -91,6 +91,9 @@ namespace Net.SamuelChen.Tetris.Game {
             }
         }
 
+        void PlayFiled_NextShapeRequested(object sender, EventArgs e) {
+            this.CallServer("NEXT");
+        }
         #endregion
 
         public void Connect(IPEndPoint serverEndPoint) {
@@ -140,11 +143,13 @@ namespace Net.SamuelChen.Tetris.Game {
             string hostName = command[0].Trim(); //client name
             string action = command[1].ToUpper();
             string arg = command.Length == 3 ? command[2] : null;
-             
+
             if (action.Equals("GO")) {
                 this.Go();
             } else if (action.Equals("MV")) {
                 this.Move(hostName, arg);
+            } else if (action.Equals("NEXT")) {
+                this.Next(hostName, arg);
             } else if (action.Equals("NEW")) {
                 this.New();
             } else if (action.Equals("PAUSE")) {
@@ -191,16 +196,19 @@ namespace Net.SamuelChen.Tetris.Game {
 
             if (null == this.Players || this.Players.Count < 1)
                 return;
-            
-            foreach (Player player in this.Players.Values){
+
+            foreach (Player player in this.Players.Values) {
                 player.PlayFiled.Go();
-            }             
+            }
+
+            if (null != this.GameElapsed)
+                this.GameElapsed(this, new EventArgs());
         }
 
         public void Move(string hostName, string moving) {
             Debug.Assert(!string.IsNullOrEmpty(hostName));
             Debug.Assert(!string.IsNullOrEmpty(moving));
-            
+
             moving = moving.ToUpper();
             object enumMoving = null;
             if (!GameBase.ActionMapping.TryGetValue(moving, out enumMoving)
@@ -212,21 +220,36 @@ namespace Net.SamuelChen.Tetris.Game {
                 foreach (Player player in this.Players.Values)
                     player.PlayFiled.Go(enumMoving);
             } else {
-                Player player = this.GetPlayerByhostName(hostName);
+                Player player = this.GetPlayerByHostName(hostName);
                 if (null != player && player != m_player)
                     player.PlayFiled.Go(enumMoving);
             }
         }
 
+        public void Next(string hostName, string shapeType) {
+            //Debug.Assert(!string.IsNullOrEmpty(shapeType));
+            if (string.IsNullOrEmpty(shapeType))
+                return;
+            string[] tmp = shapeType.Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
+            Debug.Assert(tmp.Length == 2);
+            if (tmp.Length != 2)
+                return;
+            try {
+                int blocks = Convert.ToInt32(tmp[0].Trim());
+                int type = Convert.ToInt32(tmp[1].Trim());
+
+                Player player = this.GetPlayerByHostName(hostName);
+                if (null != player && null != player.PlayFiled)
+                    player.PlayFiled.AddShapeToNextQueue(blocks, type);
+            } catch (Exception err) {
+                Trace.TraceError("Client '{0}' create next shape({1}) error.", hostName, shapeType);
+                Trace.TraceError(err.ToString());
+            }
+        }
 
         private void HostSetPlayerName(string hostName, string playerName) {
             Debug.Assert(!hostName.Equals("ALL"));
-
-            Player player = this.GetPlayerByhostName(hostName);
-            Debug.Assert(null != player);
-            if (null != player) {
-                this.ChangePlayerName(player.Name, playerName);
-            }
+            this.ChangePlayerName(hostName, playerName);
         }
 
         private void HostGetPlayerName() {
@@ -246,14 +269,14 @@ namespace Net.SamuelChen.Tetris.Game {
             if (hostName.Equals(m_client.Name) || string.IsNullOrEmpty(hostName))
                 return;
 
-            Player player = this.GetPlayerByhostName(hostName);
+            Player player = this.GetPlayerByHostName(hostName);
             Debug.Assert(null == player);
             if (null != player)
                 return;
 
             player = new Player();
             player.HostName = hostName;
-            player.PlayFiled = new PlayPanel();
+            player.PlayFiled = new PlayPanel(true);
             this.AddPlayer(player);
 
             if (null != this.PlayerJoined)
@@ -267,7 +290,7 @@ namespace Net.SamuelChen.Tetris.Game {
             Debug.Assert(!hostName.Equals("ALL"));
             if (hostName.Equals(m_client.Name))
                 return;
-            Player player = this.GetPlayerByhostName(hostName);
+            Player player = this.GetPlayerByHostName(hostName);
             this.RemovePlayer(player);
             if (null != this.PlayerLeft)
                 this.PlayerLeft(this, new PlayerEventArgs(player));
@@ -305,27 +328,25 @@ namespace Net.SamuelChen.Tetris.Game {
         public override void AddPlayer(Player player) {
             if (null == player)
                 return;
-
+            if (null == player.PlayFiled)
+                player.PlayFiled = new PlayPanel(true);
+            
             base.AddPlayer(player);
-            if (this.Players.Count == 1)
+            if (this.Players.Count == 1) {
                 m_player = player;
+                player.PlayFiled.NextShapeRequested += PlayFiled_NextShapeRequested;
+            }
         }
 
         public override Player RemovePlayer(string name) {
-            if (this.Players.Count == 1)
-                m_player = null;                        
+            if (this.Players.Count == 1) {
+                m_player = null;
+                m_player.PlayFiled.NextShapeRequested -= PlayFiled_NextShapeRequested;
+            }
             return base.RemovePlayer(name);
         }
 
         #endregion
-
-        protected Player GetPlayerByhostName(string hostName) {
-            foreach (Player player in this.Players.Values) {
-                if (hostName.Equals(player.HostName, StringComparison.CurrentCultureIgnoreCase))
-                    return player;
-            }
-            return null;
-        }
 
         #region IDisposable Members
 
@@ -333,6 +354,11 @@ namespace Net.SamuelChen.Tetris.Game {
         public override void Dispose() {
             if (_disposed)
                 return;
+
+            m_client.Connected -= OnConnected;
+            m_client.Disconnected -= OnDisconnected;
+            m_client.ServerCalled -= OnServerCalled;
+            m_client.ServerDataValidating -= OnServerDataValidating;
 
             m_player = null;
             base.Dispose();

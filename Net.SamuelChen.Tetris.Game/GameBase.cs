@@ -12,9 +12,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
+using Net.SamuelChen.Tetris.Rule;
 
 namespace Net.SamuelChen.Tetris.Game {
     public abstract class GameBase : IGame {
+
+        public EventHandler GameElapsed;
 
         public static IDictionary<string, object> ActionMapping
             = new Dictionary<string, object>();
@@ -22,11 +25,14 @@ namespace Net.SamuelChen.Tetris.Game {
         public GameBase()
             : base() {
             Players = new Dictionary<string, Player>();
+            Commands = new Dictionary<string, ICommand>();
         }
 
         #region IGame Members
 
         public EnumGameStatus Status { get; protected set; }
+
+        public IDictionary<string, ICommand> Commands { get; protected set; }
 
         public object Tag { get; set; }
 
@@ -68,32 +74,47 @@ namespace Net.SamuelChen.Tetris.Game {
         }
 
         /// <summary>
-        /// Change a player name.
+        /// Change a player name of host.
         /// </summary>
-        /// <param name="oldName"></param>
+        /// <param name="hostName"></param>
         /// <param name="newName"></param>
         /// <returns></returns>
-        public bool ChangePlayerName(string oldName, string newName) {
+        protected bool ChangePlayerName(string hostName, string newName) {
+            Debug.Assert(!string.IsNullOrEmpty(hostName));
+            Debug.Assert(!string.IsNullOrEmpty(newName));
             Debug.Assert(null != Players);
-            Debug.Assert(!oldName.Equals(newName, StringComparison.InvariantCultureIgnoreCase));
-            Debug.Assert(!Players.Keys.Contains(newName));
 
-            if (null == Players)
+            if (string.IsNullOrEmpty(hostName) || string.IsNullOrEmpty(newName) 
+                || null == this.Players || 0 == this.Players.Count)
                 return false;
 
-            if (oldName.Equals(newName, StringComparison.InvariantCultureIgnoreCase))
+            Player player = this.GetPlayerByHostName(hostName);
+            if (null == player)
                 return false;
+            if (player.Name.Equals(newName, StringComparison.InvariantCultureIgnoreCase))
+                return true;
 
-            if (Players.Keys.Contains(newName))
-                return false;
+            Player tmpPlayer = null;
+            if (this.Players.TryGetValue(newName, out tmpPlayer))
+                newName = string.Format("{0}@{1}", newName, player.HostName);
 
-            Player player = null;
-            if (Players.TryGetValue(oldName, out player)) {
-                player.Name = newName;
-                Players.Remove(oldName);
-                Players.Add(newName, player);
-            }
+            this.Players.Remove(player.Name);
+            player.Name = newName;
+            this.Players.Add(player.Name, player);
+
             return true;
+        }
+
+
+        protected Player GetPlayerByHostName(string hostName) {
+            Debug.Assert(null != this.Players);
+            if (null == this.Players)
+                return null;
+            foreach (Player player in this.Players.Values) {
+                if (hostName.Equals(player.HostName, StringComparison.CurrentCultureIgnoreCase))
+                    return player;
+            }
+            return null;
         }
 
         #endregion
