@@ -1,8 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<root>
-	<control>
-		<keymap no="" left="A" right="D" rotate="W" down="S" direct="Z" />
-		<keymap no="" left="J" right="L" rotate="I" down="K" direct="N" />
-		<keymap no="" left="LEFT" right="RIGHT" rotate="UP" down="DOWN" direct="END" />
-	</control>
-</root>
