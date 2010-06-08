@@ -294,10 +294,10 @@ namespace Net.SamuelChen.Tetris.Game {
             }
 
             if (null != m_curShape)
-                m_curShape.Moved -= new ShapeMovingHandler(OnCurShape_Moved);
+                m_curShape.Moved -= OnCurShape_Moved;
             m_curShape = m_nextShape;
             if (null != m_curShape)
-                m_curShape.Moved += new ShapeMovingHandler(OnCurShape_Moved);
+                m_curShape.Moved += OnCurShape_Moved;
 
             m_nextShape = sharp;
             if (null != m_nextShape)
@@ -367,6 +367,7 @@ namespace Net.SamuelChen.Tetris.Game {
                 m_Cells[blocks[i].Y, blocks[i].X] = blocks[i];
                 m_Cells[blocks[i].Y, blocks[i].X].Type = EnumBlockType.RoadBlock;
             }
+            m_curShape.Moved -= OnCurShape_Moved;
             m_curShape = null;
         }
 

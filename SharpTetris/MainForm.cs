@@ -100,6 +100,8 @@ namespace Net.SamuelChen.Tetris {
             LocalGame game = GameFactory.CreateGame(type) as LocalGame;
             game.Container = m_gameContainer;
             foreach (Player player in players) {
+                if (null == player.PlayFiled)
+                    player.PlayFiled = new PlayPanel(false);
                 this.InitPlayer(player);
                 game.AddPlayer(player);
             }
